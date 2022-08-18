@@ -1,0 +1,68 @@
+.status-pre-registro {
+  color: #fff;
+  background-color: #17d8df;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5rem;
+}
+
+.status-registrada {
+  color: #fff;
+  background-color: #17df28;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5rem;
+  min-width: 75px;
+}
+
+.datatable-appointment .table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.p-button.p-button-icon-only.p-button-rounded {
+  margin-right: 0.2rem;
+}
+
+@media screen and (max-width: 960px) {
+  .datatable-appointment .table-header {
+      align-items: flex-start;
+  }
+}
+.datatable-appointment .product-image {
+  width: 100px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+.datatable-appointment .p-dialog .product-image {
+  width: 150px;
+  margin: 0 auto 2rem auto;
+  display: block;
+}
+.datatable-appointment .confirmation-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media screen and (max-width: 960px) {
+  .datatable-appointment .p-toolbar {
+      flex-wrap: wrap;
+  }
+  .datatable-appointment .p-toolbar .p-button {
+      margin-bottom: 0.25rem;
+  }
+  .datatable-appointment .table-header {
+      flex-direction: column;
+  }
+  .datatable-appointment .table-header .p-input-icon-left, .datatable-appointment .table-header input {
+      width: 100%;
+  }
+}
+
+.new-button {
+  color: #2f48d3;
+}
+
+.delete-button {
+  color: #ee2637;
+  border-radius: 50%;
+  height: 3rem;
+}
