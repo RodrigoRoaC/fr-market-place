@@ -83,10 +83,10 @@ export const LoginForm = () => {
                 </Dialog>
                 <Dialog visible={showError} onHide={() => setShowError(false)} position="top" footer={dialogErrorFooter} showHeader={false} breakpoints={{ '960px': '80vw' }} style={{ width: '30vw' }}>
                     <div className="flex align-items-center flex-column pt-6 px-3">
-                        <i className="pi pi-check-circle" style={{ fontSize: '5rem', color: 'var(--green-500)' }}></i>
-                        <h5>Login Successful!</h5>
+                        <i className="pi pi-times" style={{ fontSize: '5rem', color: 'var(--red-500)' }}></i>
+                        <h5>Login Error!</h5>
                         <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
-                            Welcome <b>{formData.username}</b>
+                            Wrong credentials
                         </p>
                     </div>
                 </Dialog>
