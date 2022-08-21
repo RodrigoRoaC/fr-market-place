@@ -1,18 +1,27 @@
 .register-form {
-  border: 1px solid #000;
-  padding: 2rem;
-  background-color: #dfdfdf;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem;
 }
 
-.register-form .card {
+.container {
+  background-color: var(--surface-card);
+  padding: 2rem;
+  border-radius: 10px;
   min-width: 450px;
 }
-.register-form .card form {
-  margin-top: 2rem;
+
+.mt-2 {
+  margin-top: 1.5rem;
 }
-.register-form .card .field {
-  margin-bottom: 1.5rem;
+
+.p-button {
+  background-color: var(--indigo-500);
 }
+
 @media screen and (max-width: 960px) {
   .register-form .card {
       width: 80%;
