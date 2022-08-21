@@ -55,7 +55,7 @@ const DataTableCrud = () => {
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
   const [appointment, setAppointment] = useState(emptyAppointment);
   const [selectedAppointments, setSelectedAppointments] = useState(null);
-  const [globalFilter, setGlobalFilter] = useState(null);
+  const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
   const dt = useRef(null);
   
@@ -142,7 +142,7 @@ const DataTableCrud = () => {
       <h2 className='mx-0 my-1'>Ordenes de atencion</h2>
       <span className='p-input-icon-left'>
         <i className='pi pi-search' />
-        <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value)} placeholder='Search...' />
+        <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value || ' ')} placeholder='Search...' />
         <Button label='New' icon='pi pi-plus' className='new-button' onClick={openNew} />
       </span>
     </div>

@@ -25,7 +25,7 @@ export class AppointmentService {
 
   async update(appointment) {
     try {
-      const response = await client.post('/appointment/update', appointment);
+      const response = await client.put('/appointment/update', appointment);
 
       return { data: response.data };
     } catch (err) {
@@ -64,6 +64,17 @@ export class AppointmentService {
     } catch (err) {
       console.error(err);
       return { error: err };
+    }
+  }
+
+  async asignToOperator(cod_usuario, cod_solicitud) {
+    try {
+      const response = await client.post('/appointment/assign-operator', { cod_usuario, cod_solicitud });
+
+      return { data: response.data };
+    } catch (error) {
+      console.error(error);
+      return { error };
     }
   }
 }

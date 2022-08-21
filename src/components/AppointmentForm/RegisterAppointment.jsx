@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { classNames } from 'primereact/utils';
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { AutoComplete } from 'primereact/autocomplete';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 
@@ -31,6 +32,8 @@ function RegisterAppointmentForm({
   tipoServicio = [],
 }) {
   const { user } = useContext(UserContext);
+  const [filteredDep, setFilteredDep] = useState(null);
+  const [selectedDep, setSelectedDep] = useState(null);
 
   const tipoAtencionData = [
     {
@@ -44,6 +47,7 @@ function RegisterAppointmentForm({
   ];
 
   const hideDialog = () => {
+    setSelectedDep(null);
     setSubmitted(false);
     setAppointmentDialog(false);
   }
@@ -60,12 +64,44 @@ function RegisterAppointmentForm({
     return index;
   }
 
+  const getSelectedDep = () => {
+    const sd = departamento.find(d => d.value === appointment.departamento);
+
+    return sd || {};
+  }
+
+  const searchDep = (event) => {
+    setTimeout(() => {
+      let _filteredDep;
+      if (!event.query.trim().length) {
+        _filteredDep = [...departamento];
+      }
+      else {
+        _filteredDep = filteredDep.filter((dep) => {
+          console.log('SEARCH', dep);
+          return dep.label.toLowerCase().startsWith(event.query.toLowerCase());
+        });
+      }
+
+      setFilteredDep(_filteredDep);
+    }, 250);
+  }
+
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
     let _appointment = {...appointment};
     _appointment[`${name}`] = val;
 
     setAppointment(_appointment);
+  }
+
+  const onDropDownChange = (e, name) => {
+    if (e.value?.value) {
+      let _appointment = {...appointment};
+      _appointment[`${name}`] = e.value?.value;
+      setAppointment(_appointment);
+      setSelectedDep(e.value);
+    }
   }
 
   const saveAppointment = async () => {
@@ -86,6 +122,7 @@ function RegisterAppointmentForm({
       setAppointments(_appointments);
       setAppointmentDialog(false);
       setAppointment(emptyAppointment);
+      return;
     }
     const registerRes = await appointmentService.register({ ...appointment, cod_usuario: user.cod_usuario });
     if (registerRes.error) {
@@ -118,6 +155,7 @@ function RegisterAppointmentForm({
             <div className='field'>
               <label htmlFor='apellido'>Apellido</label>
               <InputText id='apellido' value={appointment.ape_paterno} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_paterno })} />
+              {submitted && !appointment.ape_paterno && <small className='p-error'>Apellido es requerido.</small>}
             </div>
             <div className='field'>
               <label htmlFor='edad'>Edad</label>
@@ -128,7 +166,7 @@ function RegisterAppointmentForm({
           <div className='group-form-table'>
             <div className='field'>
             <label htmlFor='departamento'>Departamento</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.departamento} options={departamento} onChange={(e) => onInputChange(e, 'departamento')} placeholder='Selecciona una provincia'/>
+              <AutoComplete dropdown forceSelection field='label' value={selectedDep || getSelectedDep()} suggestions={filteredDep} completeMethod={searchDep} onChange={(e) => onDropDownChange(e, 'departamento')} aria-label='Departamentos'/>
             </div>
             <div className='field'>
               <label htmlFor='provincia'>Provincia</label>
@@ -195,7 +233,7 @@ function RegisterAppointmentForm({
             <div className='field'>
               <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
               <InputText id='numero_autorizacion' value={appointment.numero_autorizacion} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.numero_autorizacion })} />
-              {submitted && !appointment.numero_autorizacion && <small className='p-error'>Telefono es requerido.</small>}
+              {submitted && !appointment.numero_autorizacion && <small className='p-error'>Numero autorizacion es requerido.</small>}
             </div>
           </div>
 

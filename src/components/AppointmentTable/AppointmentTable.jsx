@@ -10,6 +10,8 @@ import { InputText } from 'primereact/inputtext';
 
 import './AppointmentTable.css';
 import { UserContext } from '../../context/UserContext';
+import AssignForm from '../AssignForm/AssignForm';
+import { UserService } from '../../services/User/UserService';
 
 const AppointmentTable = () => {
   let emptyAppointment = {
@@ -47,17 +49,18 @@ const AppointmentTable = () => {
     email: '',
     telefono1: '',
   };
-
+  const [operator, setOperator] = useState(null);
   const [appointments, setAppointments] = useState(null);
-  const [appointmentDialog, setAppointmentDialog] = useState(false);
+  const [assignDialog, setAssignDialog] = useState(false);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
   const [appointment, setAppointment] = useState(emptyAppointment);
   const [selectedAppointments, setSelectedAppointments] = useState(null);
-  const [globalFilter, setGlobalFilter] = useState(null);
+  const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
   const dt = useRef(null);
 
   const appointmentService = new AppointmentService();
+  const userService = new UserService();
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -67,6 +70,8 @@ const AppointmentTable = () => {
         console.error(err);
         setAppointments([]);
       });
+    userService.getOperators()
+      .then(res => setOperator(res.data));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hideDeleteAppointmentDialog = () => {
@@ -75,11 +80,21 @@ const AppointmentTable = () => {
 
   const editAppointment = (appointment) => {
     setAppointment({...appointment});
-    setAppointmentDialog(true);
+    setAssignDialog(true);
   }
 
-  const deleteappointment = () => {
-    let _appointments = appointments.filter(val => val.id !== appointment.id);
+  const confirmDeleteappointment = (appointment) => {
+    setAppointment(appointment);
+    setDeleteAppointmentDialog(true);
+  }
+
+  const deleteappointment = async () => {
+    let _appointments = appointments.filter(val => val.cod_solicitud !== appointment.cod_solicitud);
+    const { error } = await appointmentService.delete({ cod_solicitud: appointment.cod_solicitud });
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Error deleting appoinment', detail: 'Deleted failed', life: 3000 });
+      return;
+    }
     setAppointments(_appointments);
     setDeleteAppointmentDialog(false);
     setAppointment(emptyAppointment);
@@ -94,6 +109,7 @@ const AppointmentTable = () => {
     return (
       <React.Fragment>
         <Button icon='pi pi-pencil' className='p-button-rounded p-button-success mr-2' onClick={() => editAppointment(rowData)} />
+        <Button icon='pi pi-trash' className='p-button-rounded p-button-warning' onClick={() => confirmDeleteappointment(rowData)} />
       </React.Fragment>
     );
   }
@@ -103,7 +119,7 @@ const AppointmentTable = () => {
       <h2 className='mx-0 my-1'>Ordenes de atencion</h2>
       <span className='p-input-icon-left'>
         <i className='pi pi-search' />
-        <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value)} placeholder='Search...' />
+        <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value || ' ')} placeholder='Search...' />
       </span>
     </div>
   );
@@ -137,7 +153,15 @@ const AppointmentTable = () => {
         </DataTable>
       </div>
 
-      
+      <AssignForm 
+        operator = {operator}
+        assignDialog = {assignDialog}
+        setAssignDialog = {setAssignDialog}
+        toast = {toast}
+        codSolicitud = {appointment.cod_solicitud}
+        appointments = {appointments}
+        setAppointments = {setAppointments}
+      />
 
       <Dialog visible={deleteAppointmentDialog} style={{ width: '450px' }} header='Confirm' modal footer={deleteAppointmentDialogFooter} onHide={hideDeleteAppointmentDialog}>
         <div className='confirmation-content'>
