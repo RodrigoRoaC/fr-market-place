@@ -10,6 +10,8 @@ import { InputText } from 'primereact/inputtext';
 import './DataTable.css';
 import RegisterAppointmentForm from '../AppointmentForm/RegisterAppointment';
 import { UserContext } from '../../context/UserContext';
+import { parseAppointments } from '../../utils/parser';
+import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
 
 const DataTableCrud = () => {
   let emptyAppointment = {
@@ -35,7 +37,9 @@ const DataTableCrud = () => {
     cod_paciente: '',
     nombres: '',
     ape_paterno: '',
+    ape_materno: '',
     apellido: '',
+    fec_nacimiento: '',
 
     edad: '',
 
@@ -47,6 +51,7 @@ const DataTableCrud = () => {
     direccion: '',
     email: '',
     telefono1: '',
+    telefono2: '',
   };
 
   const [appointments, setAppointments] = useState(null);
@@ -60,7 +65,11 @@ const DataTableCrud = () => {
   const dt = useRef(null);
   
   const [tipoDocumento, setTipoDocumento] = useState(null);
+  
   const [departamento, setDepartamento] = useState(null);
+  const [provincia, setProvincia] = useState(null);
+  const [distrito, setDistrito] = useState(null);
+  
   const [tipoPlan, setTipoPlan] = useState(null);
   const [tipoPrograma, setTipoPrograma] = useState(null);
   const [tipoAtencion, setTipoAtencion] = useState(null);
@@ -72,7 +81,7 @@ const DataTableCrud = () => {
 
   useEffect(() => {
     appointmentService.getAppointmentsBy(user.cod_usuario)
-      .then(res => setAppointments(res.data))
+      .then(res => setAppointments(parseAppointments(res.data)))
       .catch(err => {
         console.error(err);
         setAppointments([]);
@@ -101,8 +110,21 @@ const DataTableCrud = () => {
     setDeleteAppointmentDialog(false);
   }
 
-  const editAppointment = (appointment) => {
+  const editAppointment = async (appointment) => {
+    const ubigeoService = new UbigeoService();
     setAppointment({...appointment});
+    if (appointment.departamento) {
+      const { error, data: prov } = await ubigeoService.getProvincias(appointment.departamento);
+      if (!error) {
+        setProvincia(prov);
+      }
+    }
+    if (appointment.departamento && appointment.provincia) {
+      const { error, data: dis } = await ubigeoService.getDistritos(appointment.departamento, appointment.provincia);
+      if (!error) {
+        setDistrito(dis);
+      }
+    }
     setAppointmentDialog(true);
   }
 
@@ -190,6 +212,10 @@ const DataTableCrud = () => {
         toast = {toast}
         tipoDocumento = {tipoDocumento}
         departamento = {departamento}
+        provincia = {provincia}
+        setProvincia = {setProvincia}
+        distrito = {distrito}
+        setDistrito = {setDistrito}
         tipoPlan = {tipoPlan}
         tipoPrograma = {tipoPrograma}
         tipoAtencion = {tipoAtencion}

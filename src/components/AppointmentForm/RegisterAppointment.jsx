@@ -12,6 +12,8 @@ import { Divider } from 'primereact/divider';
 import './RegisterAppointment.css';
 import { AppointmentService } from '../../services/AppointmentService';
 import { UserContext } from '../../context/UserContext';
+import { parseAppointments } from '../../utils/parser';
+import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
 
 function RegisterAppointmentForm({ 
   appointmentDialog, 
@@ -26,6 +28,10 @@ function RegisterAppointmentForm({
   toast, 
   tipoDocumento = [],
   departamento = [],
+  provincia = [],
+  setProvincia,
+  distrito = [],
+  setDistrito,
   tipoPlan = [],
   tipoPrograma = [],
   tipoAtencion = [],
@@ -33,22 +39,20 @@ function RegisterAppointmentForm({
   tipoServicio = [],
 }) {
   const { user } = useContext(UserContext);
+
   const [filteredDep, setFilteredDep] = useState(null);
   const [selectedDep, setSelectedDep] = useState(null);
 
-  const tipoAtencionData = [
-    {
-      value: 1,
-      label: 'TBD'
-    },
-    {
-      value: 2,
-      label: 'TBD'
-    },
-  ];
+  const [filteredProv, setFilteredProv] = useState(null);
+  const [selectedProv, setSelectedProv] = useState(null);
+
+  const [filteredDis, setFilteredDis] = useState(null);
+  const [selectedDis, setSelectedDis] = useState(null);
 
   const hideDialog = () => {
     setSelectedDep(null);
+    setSelectedProv(null);
+    setSelectedDis(null);
     setSubmitted(false);
     setAppointmentDialog(false);
   }
@@ -71,6 +75,18 @@ function RegisterAppointmentForm({
     return sd || { label: '', value: '' };
   }
 
+  const getSelectedProv = () => {
+    const sd = provincia?.find(d => d.value === appointment.provincia);
+
+    return sd || { label: '', value: '' };
+  }
+
+  const getSelectedDis = () => {
+    const sd = distrito?.find(d => d.value === appointment.distrito);
+
+    return sd || { label: '', value: '' };
+  }
+
   const searchDep = (event) => {
     setTimeout(() => {
       let _filteredDep;
@@ -78,13 +94,38 @@ function RegisterAppointmentForm({
         _filteredDep = [...departamento];
       }
       else {
-        _filteredDep = filteredDep.filter((dep) => {
-          console.log('SEARCH', dep);
-          return dep.label.toLowerCase().startsWith(event.query.toLowerCase());
-        });
+        _filteredDep = filteredDep.filter((dep) => dep.label.toLowerCase().startsWith(event.query.toLowerCase()));
       }
 
       setFilteredDep(_filteredDep);
+    }, 250);
+  }
+
+  const searchProv = (event) => {
+    setTimeout(() => {
+      let _filteredDep;
+      if (!event.query.trim().length) {
+        _filteredDep = [...provincia];
+      }
+      else {
+        _filteredDep = filteredProv.filter((dep) => dep.label.toLowerCase().startsWith(event.query.toLowerCase()));
+      }
+
+      setFilteredProv(_filteredDep);
+    }, 250);
+  }
+
+  const searchDis = (event) => {
+    setTimeout(() => {
+      let _filteredDep;
+      if (!event.query.trim().length) {
+        _filteredDep = [...distrito];
+      }
+      else {
+        _filteredDep = filteredDis.filter((dep) => dep.label.toLowerCase().startsWith(event.query.toLowerCase()));
+      }
+
+      setFilteredDis(_filteredDep);
     }, 250);
   }
 
@@ -96,12 +137,63 @@ function RegisterAppointmentForm({
     setAppointment(_appointment);
   }
 
+  const setProvinciaData = async (ubigeoDep) => {
+    const ubigeoService = new UbigeoService();
+    const { error, data } = await ubigeoService.getProvincias(ubigeoDep);
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Provincias list Error', detail: 'Get provincias failed', life: 3000 });
+      return;
+    }
+
+    setProvincia(data);
+  }
+
+  const setDistritoData = async (ubigeoDep, ubigeoProv) => {
+    const ubigeoService = new UbigeoService();
+    const { error, data } = await ubigeoService.getDistritos(ubigeoDep, ubigeoProv);
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Distritos list Error', detail: 'Get distritos failed', life: 3000 });
+      return;
+    }
+
+    setDistrito(data);
+  }
+
   const onDropDownChange = (e, name) => {
     if (e.value?.value) {
       let _appointment = {...appointment};
       _appointment[`${name}`] = e.value?.value;
+      _appointment[`provincia`] = '';
+      _appointment[`distrito`] = '';
       setAppointment(_appointment);
       setSelectedDep(e.value);
+      setSelectedProv(null);
+      setSelectedDis(null);
+      setProvincia([]);
+      setDistrito([]);
+      setProvinciaData(e.value?.value);
+    }
+  }
+
+  const onProvDownChange = (e, name) => {
+    if (e.value?.value) {
+      let _appointment = {...appointment};
+      _appointment[`${name}`] = e.value?.value;
+      _appointment[`distrito`] = '';
+      setAppointment(_appointment);
+      setSelectedProv(e.value);
+      setSelectedDis(null);
+      setDistrito([]);
+      setDistritoData(appointment.departamento, e.value?.value);
+    }
+  }
+
+  const onDisDownChange = (e, name) => {
+    if (e.value?.value) {
+      let _appointment = {...appointment};
+      _appointment[`${name}`] = e.value?.value;
+      setAppointment(_appointment);
+      setSelectedDis(e.value);
     }
   }
 
@@ -109,7 +201,7 @@ function RegisterAppointmentForm({
     const appointmentService = new AppointmentService();
     setSubmitted(true);
     let _appointments = [...appointments];
-    console.log(appointment);
+
     if (appointment.cod_solicitud) {
       const index = findIndexById(appointment.cod_solicitud);
       const updateRes = await appointmentService.update({ ...appointment, cod_usuario: user.cod_usuario });
@@ -117,7 +209,7 @@ function RegisterAppointmentForm({
         toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
         return;
       }
-      _appointments[index] = updateRes.data;
+      _appointments[index] = { ...(parseAppointments([updateRes.data])[0]) };
       toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
 
       setAppointments(_appointments);
@@ -131,7 +223,7 @@ function RegisterAppointmentForm({
       return;
     }
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-    setAppointments([registerRes.data, ...appointments]);
+    setAppointments([...(parseAppointments(registerRes.data)[0]), ...appointments]);
     setAppointmentDialog(false);
     setAppointment(emptyAppointment);
   }
@@ -154,22 +246,22 @@ function RegisterAppointmentForm({
           <div className='group-form-contac'>
             <div className='nombre field'>
               <label htmlFor='nombres'>Nombre</label>
-              <InputText id='nombres' value={appointment.nombres} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.nombres })} />
+              <InputText id='nombres' value={appointment.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.nombres })} />
               {submitted && !appointment.nombres && <small className='p-error'>Nombre es requerido.</small>}
             </div>
             <div className='apepat field'>
               <label htmlFor='apePat'>Apellido Paterno</label>
-              <InputText id='apePat' value={appointment.ape_paterno} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_paterno })} />
+              <InputText id='apePat' value={appointment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_paterno })} />
               {submitted && !appointment.ape_paterno && <small className='p-error'>Apellido Paterno es requerido.</small>}
             </div>
             <div className='apemat field'>
               <label htmlFor='apeMat'>Apellido Materno</label>
-              <InputText id='apeMat' value={appointment.ape_materno} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_materno })} />
+              <InputText id='apeMat' value={appointment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_materno })} />
               {submitted && !appointment.ape_materno && <small className='p-error'>Apellido Materno es requerido.</small>}
             </div>
             <div className='fnac field'>
               <label htmlFor='fecNac'>Fecha Nacimiento</label>
-              <Calendar dateFormat='dd/mm/yy' id='fecNac' value={appointment.fec_nacimiento} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.fec_nacimiento })} showIcon />
+              <Calendar dateFormat='dd/mm/yy' id='fecNac' value={appointment.fec_nacimiento || ''} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.fec_nacimiento })} showIcon />
               {submitted && !appointment.fec_nacimiento && <small className='p-error'>Fecha de Nacimiento es requerido.</small>}
             </div>
             <div className='depa field'>
@@ -178,40 +270,39 @@ function RegisterAppointmentForm({
             </div>
             <div className='prov field'>
               <label htmlFor='provincia'>Provincia</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.provincia} options={tipoAtencionData} onChange={(e) => onInputChange(e, 'provincia')} placeholder='Selecciona una provincia'/>
+              <AutoComplete dropdown forceSelection field='label' value={selectedProv || getSelectedProv()} suggestions={filteredProv} completeMethod={searchProv} onChange={(e) => onProvDownChange(e, 'provincia')} aria-label='Provincias'/>
             </div>
             <div className='dist field'>
               <label htmlFor='distrito'>Distrito</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.distrito} options={tipoAtencionData} onChange={(e) => onInputChange(e, 'distrito')} placeholder='Selecciona un distrito'/>
+              <AutoComplete dropdown forceSelection field='label' value={selectedDis || getSelectedDis()} suggestions={filteredDis} completeMethod={searchDis} onChange={(e) => onDisDownChange(e, 'distrito')} aria-label='Distritos'/>
             </div>
             <div className='tdoc field'>
               <label htmlFor='cod_tipo_doc'>Tipo Documento</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_doc} options={tipoDocumento} onChange={(e) => onInputChange(e, 'cod_tipo_doc')} placeholder='Seleccionar'/>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_doc || ''} options={tipoDocumento} onChange={(e) => onInputChange(e, 'cod_tipo_doc')} placeholder='Seleccionar'/>
             </div>
             <div className='ndoc field'>
               <label htmlFor='num_documento'>N° Documento</label>
-              <InputText id='num_documento' value={appointment.num_documento} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.num_documento })} />
+              <InputText id='num_documento' value={appointment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.num_documento })} />
               {submitted && !appointment.num_documento && <small className='p-error'>Documento es requerido.</small>}
             </div>
             <div className='email field'>
               <label htmlFor='email'>Email</label>
-              <InputText id='email' value={appointment.email} onChange={(e) => onInputChange(e, 'email')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.email })} />
+              <InputText id='email' value={appointment.email || ''} onChange={(e) => onInputChange(e, 'email')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.email })} />
               {submitted && !appointment.email && <small className='p-error'>Email es requerido.</small>}
             </div>
             <div className='direc field'>
               <label htmlFor='direccion'>Dirección</label>
-              <InputText id='direccion' value={appointment.direccion} onChange={(e) => onInputChange(e, 'direccion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.direccion })} />
+              <InputText id='direccion' value={appointment.direccion || ''} onChange={(e) => onInputChange(e, 'direccion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.direccion })} />
               {submitted && !appointment.direccion && <small className='p-error'>Direccion es requerido.</small>}
             </div>
             <div className='tel1 field'>
               <label htmlFor='telefono1'>Telefono 1</label>
-              <InputText id='telefono1' value={appointment.telefono1} onChange={(e) => onInputChange(e, 'telefono1')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.telefono1 })} />
+              <InputText id='telefono1' value={appointment.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.telefono1 })} />
               {submitted && !appointment.telefono1 && <small className='p-error'>Telefono 1 es requerido.</small>}
             </div>
             <div className='tel2 field'>
               <label htmlFor='telefono2'>Telefono 2</label>
-              <InputText id='telefono2' value={appointment.telefono2} onChange={(e) => onInputChange(e, 'telefono2')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.telefono2 })} />
-              {submitted && !appointment.telefono2 && <small className='p-error'>Telefono 2 es requerido.</small>}
+              <InputText id='telefono2' value={appointment.telefono2 || ''} onChange={(e) => onInputChange(e, 'telefono2')} required autoFocus className={classNames({ 'p-invalid': false })} />
             </div>
           </div>
 
@@ -243,15 +334,15 @@ function RegisterAppointmentForm({
             </div>
             <div className='nauto field'>
               <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
-              <InputText id='numero_autorizacion' value={appointment.numero_autorizacion} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.numero_autorizacion })} />
+              <InputText id='numero_autorizacion' value={appointment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.numero_autorizacion })} />
               {submitted && !appointment.numero_autorizacion && <small className='p-error'>Numero autorizacion es requerido.</small>}
             </div>
           </div>
 
-          <Divider align="left">
-            <div className="inline-flex align-items-center">
-                <b>Cita</b>
-            </div>
+        <Divider align="left">
+          <div className="inline-flex align-items-center">
+              <b>Cita</b>
+          </div>
         </Divider>
           <div className='group-form-cita'>
             <div className='fecprog field'>
@@ -260,7 +351,7 @@ function RegisterAppointmentForm({
             </div>
             <div className='horaprog field'>
               <label htmlFor='hora_programacion'>Hora Programacion</label>
-              <Calendar timeOnly showTime hourFormat="12" id='hora_programacion' value={appointment.hora_programacion} onChange={(e) => onInputChange(e, 'hora_programacion')}></Calendar>
+              <Calendar timeOnly showTime hourFormat="12" id='hora_programacion' value={appointment.hora_programacion} onChange={(e) => onInputChange(e, 'hora_programacion')} />
             </div>
             <div className='fecauto field'>
               <label htmlFor='fecha_autorizacion'>Fecha Autorizacion</label>
@@ -268,11 +359,11 @@ function RegisterAppointmentForm({
             </div>
             <div className='sintomas field'>
               <label htmlFor='sintomas'>Sintomas</label>
-              <InputTextarea id='sintomas' value={appointment.sintomas} onChange={(e) => onInputChange(e, 'sintomas')} required rows={3} cols={20} />
+              <InputTextarea id='sintomas' value={appointment.sintomas || ''} onChange={(e) => onInputChange(e, 'sintomas')} required rows={3} cols={20} />
             </div>
             <div className='diagnostico field'>
                 <label htmlFor='diagnostico'>Diagnostico</label>
-                <InputTextarea id='diagnostico' value={appointment.diagnostico} onChange={(e) => onInputChange(e, 'diagnostico')} required rows={3} cols={20} />
+                <InputTextarea id='diagnostico' value={appointment.diagnostico || ''} onChange={(e) => onInputChange(e, 'diagnostico')} required rows={3} cols={20} />
               </div>
           </div>
       </div>
