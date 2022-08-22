@@ -3,16 +3,97 @@
   Form
 */
 
-.group-form-table {
-  display: flex;
-  margin: 0.5rem 0.5rem 1rem 0.5rem;
-  justify-content: space-between;
+.p-dialog-header { 
+  border-bottom: 1px solid var(--gray-500) !important;
 }
 
-.group-form-table.half .field {
-  flex: 1;
+.p-dialog-footer { 
+  border-top: 1px solid var(--gray-300) !important;
+  padding: 1rem !important;
 }
 
-.div-form-table h4 {
-  margin: 0;
+.group-form-contac {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nombre nombre apepat apepat apemat apemat"
+    "tdoc tdoc ndoc ndoc fnac fnac"
+    "depa depa prov prov dist dist"
+    "email email email email tel1 tel2"
+    "direc direc direc direc direc direc";
 }
+
+.nombre { grid-area: nombre; }
+
+.tdoc { grid-area: tdoc; }
+
+.apepat { grid-area: apepat; }
+
+.apemat { grid-area: apemat; }
+
+.ndoc { grid-area: ndoc; }
+
+.fnac { grid-area: fnac; }
+
+.tel1 { grid-area: tel1; }
+
+.tel2 { grid-area: tel2; }
+
+.depa { grid-area: depa; }
+
+.prov { grid-area: prov; }
+
+.dist { grid-area: dist; }
+
+.email { grid-area: email; }
+
+.direc { grid-area: direc; }
+
+.group-form-serv {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "tprograma tplan tplan"
+    "nauto nauto ."
+    "tatencion tservicio modalidad";
+}
+
+.tprograma { grid-area: tprograma; }
+
+.tplan { grid-area: tplan; }
+
+.nauto { grid-area: nauto; }
+
+.tatencion { grid-area: tatencion; }
+
+.tservicio { grid-area: tservicio; }
+
+.modalidad { grid-area: modalidad; }
+
+.group-form-cita {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1.5fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "fecprog horaprog fecauto"
+    "sintomas sintomas sintomas"
+    "diagnostico diagnostico diagnostico";
+}
+
+.sintomas { grid-area: sintomas; }
+
+.diagnostico { grid-area: diagnostico; }
+
+.fecprog { grid-area: fecprog; }
+
+.horaprog { grid-area: horaprog; }
+
+.fecauto { grid-area: fecauto; }
