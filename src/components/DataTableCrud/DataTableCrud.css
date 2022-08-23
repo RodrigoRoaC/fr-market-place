@@ -66,3 +66,7 @@
   border-radius: 50%;
   height: 3rem;
 }
+
+.white {
+  color: #fff !important;
+}

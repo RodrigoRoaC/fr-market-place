@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from '../components/Sidebar/Sidebar';
 import HomePage from '../pages/Home/Home';
 import AppointmentPage from '../pages/Appointment/Appointment';
-import AssignAppointment from '../pages/AssignAppointment/AssignAppointment';
+import PaymentPage from '../pages/Payment/Payment';
 
 function MarketRoutes() {
   return (
@@ -12,8 +12,10 @@ function MarketRoutes() {
       <Sidebar />
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/appointment' element={<AppointmentPage />} />
-        <Route path='/assign-appointment' element={<AssignAppointment />} />
+        <Route path='/payment' element={<PaymentPage />} />
+        <Route path='/profile' element={<AppointmentPage />} />
+        <Route path='/request-appointment' element={<AppointmentPage />} />
+        <Route path='/medical-appointment' element={<AppointmentPage />} />
 
         <Route path='/*' element={<Navigate to='/' />}/>
       </Routes>

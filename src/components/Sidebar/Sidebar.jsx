@@ -1,14 +1,22 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link } from "react-router-dom";
 import { SidebarData } from './SidebarData';
 
 import 'primeicons/primeicons.css';
 import './Sidebar.css';
+import { UserContext } from '../../context/UserContext';
+import { Button } from 'primereact/button';
 
 function Sidebar() {
+  const { user, setUser} = useContext(UserContext);
   const [sidebar, setSidebar] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
+
+  const logOut = () => {
+    localStorage.removeItem('cmd_user');
+    setUser(null);
+  }
 
   return (
     <>
@@ -27,6 +35,9 @@ function Sidebar() {
           </li>
           {
             SidebarData.map((item, index) => {
+              if (!item.acl.includes(user.cod_perfil)) {
+                return (<React.Fragment key={index}></React.Fragment>);
+              }
               return (
                 <li key={index} className={item.cName}>
                   <Link to={item.path}>
@@ -37,6 +48,9 @@ function Sidebar() {
               );
             })
           }
+          <li className='nav-text'>
+            <Button icon='pi pi-power-off' className='white p-button-text' label='Cerrar Sesión' onClick={logOut}/>
+          </li>
         </ul>
       </nav>
     </>

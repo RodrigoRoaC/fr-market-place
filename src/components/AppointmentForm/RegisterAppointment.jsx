@@ -8,6 +8,7 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
+import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 
 import './RegisterAppointment.css';
 import { AppointmentService } from '../../services/AppointmentService';
@@ -48,6 +49,14 @@ function RegisterAppointmentForm({
 
   const [filteredDis, setFilteredDis] = useState(null);
   const [selectedDis, setSelectedDis] = useState(null);
+
+  const accept = () => {
+    toast.current.show({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+  }
+
+  const reject = () => {
+      toast.current.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+  }
 
   const hideDialog = () => {
     setSelectedDep(null);
@@ -228,8 +237,20 @@ function RegisterAppointmentForm({
     setAppointment(emptyAppointment);
   }
 
+  const generatePayment = () => {
+    confirmDialog({
+      message: 'Are you sure you want to proceed?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      position: 'top',
+      accept,
+      reject
+    });
+  }
+
   const appointmentDialogFooter = (
     <React.Fragment>
+      { appointment.descripcion === 'REGISTRADA' && <Button label='Generar Pago' icon='pi pi-wallet' className='p-button-text' onClick={generatePayment} /> }
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
       <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveAppointment} />
     </React.Fragment>
@@ -237,6 +258,7 @@ function RegisterAppointmentForm({
 
   return (
     <Dialog visible={appointmentDialog} style={{ width: '950px'}} header='Registrar solicitud' modal className='p-fluid' footer={appointmentDialogFooter} onHide={hideDialog}>
+      <ConfirmDialog />
       <div className='div-form-table'>
         <Divider align="left">
             <div className="inline-flex align-items-center">
@@ -362,9 +384,9 @@ function RegisterAppointmentForm({
               <InputTextarea id='sintomas' value={appointment.sintomas || ''} onChange={(e) => onInputChange(e, 'sintomas')} required rows={3} cols={20} />
             </div>
             <div className='diagnostico field'>
-                <label htmlFor='diagnostico'>Diagnostico</label>
-                <InputTextarea id='diagnostico' value={appointment.diagnostico || ''} onChange={(e) => onInputChange(e, 'diagnostico')} required rows={3} cols={20} />
-              </div>
+              <label htmlFor='diagnostico'>Diagnostico</label>
+              <InputTextarea id='diagnostico' value={appointment.diagnostico || ''} onChange={(e) => onInputChange(e, 'diagnostico')} required rows={3} cols={20} />
+            </div>
           </div>
       </div>
     </Dialog>

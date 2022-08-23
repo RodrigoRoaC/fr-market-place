@@ -7,58 +7,19 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 
-import './DataTable.css';
+import './DataTableCrud.css';
 import RegisterAppointmentForm from '../AppointmentForm/RegisterAppointment';
 import { UserContext } from '../../context/UserContext';
 import { parseAppointments } from '../../utils/parser';
 import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
+import emptyAppointment from '../../data/appointment';
 
 const DataTableCrud = () => {
-  let emptyAppointment = {
-    cod_solicitud: '',
-    cod_usuario: '',
-    cod_estado: '',
-
-    descripcion: '',
-
-    cod_tipo_atencion: '',
-    cod_tipo_servicio: '',
-    cod_modalidad: '',
-    cod_plan: '',
-    cod_iafa: '',
-
-    fecha_programacion: '',
-    fecha_autorizacion: '',
-    hora_programacion: '',
-    numero_autorizacion: '',
-    sintomas: '',
-    diagnostico: '',
-
-    cod_paciente: '',
-    nombres: '',
-    ape_paterno: '',
-    ape_materno: '',
-    apellido: '',
-    fec_nacimiento: '',
-
-    edad: '',
-
-    cod_tipo_doc: '',
-    num_documento: '',
-    departamento: '',
-    provincia: '',
-    distrito: '',
-    direccion: '',
-    email: '',
-    telefono1: '',
-    telefono2: '',
-  };
-
   const [appointments, setAppointments] = useState(null);
   const [appointmentDialog, setAppointmentDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
-  const [appointment, setAppointment] = useState(emptyAppointment);
+  const [appointment, setAppointment] = useState({...emptyAppointment});
   const [selectedAppointments, setSelectedAppointments] = useState(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
@@ -97,7 +58,6 @@ const DataTableCrud = () => {
         setTipoModalidad(data.modalidadData);
         setTServicio(data.servicioData);
       });
-    // setAppointments(appointmentService.getAppointments());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openNew = () => {
@@ -165,7 +125,7 @@ const DataTableCrud = () => {
       <span className='p-input-icon-left'>
         <i className='pi pi-search' />
         <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value || ' ')} placeholder='Search...' />
-        <Button label='New' icon='pi pi-plus' className='new-button' onClick={openNew} />
+        <Button label='New' icon='pi pi-plus' className='white new-button' onClick={openNew} />
       </span>
     </div>
   );

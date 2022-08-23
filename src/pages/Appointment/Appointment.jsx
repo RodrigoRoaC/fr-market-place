@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import AppointmentTable from '../../components/AppointmentTable/AppointmentTable';
-import DataTableCrud from '../../components/DataTable/DataTable'
+import DataTableCrud from '../../components/DataTableCrud/DataTableCrud'
 import { UserContext } from '../../context/UserContext';
 
 function Appointment() {
