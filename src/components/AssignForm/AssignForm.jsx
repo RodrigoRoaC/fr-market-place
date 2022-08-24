@@ -39,7 +39,7 @@ const AssignForm = ({
       detail: 'Appointment assigned',
       life: 3000,
     });
-    setAppointments({ ..._appointments });
+    setAppointments([ ..._appointments ]);
     setAssignDialog(false);
   };
 

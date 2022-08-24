@@ -119,7 +119,7 @@ function PaymentForm({
                 <b>Paciente</b>
             </div>
           </Divider>
-          <div className='group-form-contac'>
+          <div className='group-form-contact-payment'>
             <div className='nombre field'>
               <label htmlFor='nombres'>Nombre</label>
               <InputText id='nombres' value={payment.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.nombres })} disabled/>
@@ -151,7 +151,7 @@ function PaymentForm({
                 <b>Pago</b>
             </div>
           </Divider>
-          <div className='group-form-cita'>
+          <div className='group-form-payment'>
             <div className='nauto field'>
               <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
               <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} />

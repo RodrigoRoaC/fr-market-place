@@ -15,6 +15,7 @@ import { AppointmentService } from '../../services/AppointmentService';
 import { UserContext } from '../../context/UserContext';
 import { parseAppointments } from '../../utils/parser';
 import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
+import { validateAppointmentValues } from '../../utils/validations';
 
 function RegisterAppointmentForm({ 
   appointmentDialog, 
@@ -63,6 +64,7 @@ function RegisterAppointmentForm({
     setSelectedProv(null);
     setSelectedDis(null);
     setSubmitted(false);
+    setAppointment(emptyAppointment);
     setAppointmentDialog(false);
   }
 
@@ -210,6 +212,10 @@ function RegisterAppointmentForm({
     const appointmentService = new AppointmentService();
     setSubmitted(true);
     let _appointments = [...appointments];
+    if (validateAppointmentValues(appointment)) {
+      toast.current.show({ severity: 'error', summary: 'Appoinment Error', detail: 'Complete fields', life: 3000 });
+      return;
+    }
 
     if (appointment.cod_solicitud) {
       const index = findIndexById(appointment.cod_solicitud);
@@ -222,8 +228,8 @@ function RegisterAppointmentForm({
       toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
 
       setAppointments(_appointments);
-      setAppointmentDialog(false);
-      setAppointment(emptyAppointment);
+      setAppointment({ ...(parseAppointments([updateRes.data])[0]) });
+      generatePayment();
       return;
     }
     const registerRes = await appointmentService.register({ ...appointment, cod_usuario: user.cod_usuario });
@@ -233,16 +239,16 @@ function RegisterAppointmentForm({
     }
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
     setAppointments([...(parseAppointments(registerRes.data)[0]), ...appointments]);
-    setAppointmentDialog(false);
-    setAppointment(emptyAppointment);
+    setAppointment({ ...parseAppointments(registerRes.data)[0] });
+    generatePayment();
   }
 
   const generatePayment = () => {
     confirmDialog({
-      message: 'Are you sure you want to proceed?',
-      header: 'Confirmation',
+      message: '¿Desea generar orden de pago?',
+      header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
-      position: 'top',
+      position: 'center',
       accept,
       reject
     });
@@ -314,13 +320,11 @@ function RegisterAppointmentForm({
             </div>
             <div className='direc field'>
               <label htmlFor='direccion'>Dirección</label>
-              <InputText id='direccion' value={appointment.direccion || ''} onChange={(e) => onInputChange(e, 'direccion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.direccion })} />
-              {submitted && !appointment.direccion && <small className='p-error'>Direccion es requerido.</small>}
+              <InputText id='direccion' value={appointment.direccion || ''} onChange={(e) => onInputChange(e, 'direccion')} required autoFocus className={classNames({ 'p-invalid': false })} />
             </div>
             <div className='tel1 field'>
               <label htmlFor='telefono1'>Telefono 1</label>
-              <InputText id='telefono1' value={appointment.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.telefono1 })} />
-              {submitted && !appointment.telefono1 && <small className='p-error'>Telefono 1 es requerido.</small>}
+              <InputText id='telefono1' value={appointment.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required autoFocus className={classNames({ 'p-invalid': false })} />
             </div>
             <div className='tel2 field'>
               <label htmlFor='telefono2'>Telefono 2</label>
@@ -354,11 +358,6 @@ function RegisterAppointmentForm({
               <label htmlFor='cod_modalidad'>Modalidad Servicio</label>
               <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_modalidad} options={tipoModalidad} onChange={(e) => onInputChange(e, 'cod_modalidad')} placeholder='Selecciona una modalidad'/>
             </div>
-            <div className='nauto field'>
-              <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
-              <InputText id='numero_autorizacion' value={appointment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.numero_autorizacion })} />
-              {submitted && !appointment.numero_autorizacion && <small className='p-error'>Numero autorizacion es requerido.</small>}
-            </div>
           </div>
 
         <Divider align="left">
@@ -374,10 +373,6 @@ function RegisterAppointmentForm({
             <div className='horaprog field'>
               <label htmlFor='hora_programacion'>Hora Programacion</label>
               <Calendar timeOnly showTime hourFormat="12" id='hora_programacion' value={appointment.hora_programacion} onChange={(e) => onInputChange(e, 'hora_programacion')} />
-            </div>
-            <div className='fecauto field'>
-              <label htmlFor='fecha_autorizacion'>Fecha Autorizacion</label>
-              <Calendar dateFormat='dd/mm/yy' id='fecha_autorizacion' value={appointment.fecha_autorizacion} onChange={(e) => onInputChange(e, 'fecha_autorizacion')} showIcon />
             </div>
             <div className='sintomas field'>
               <label htmlFor='sintomas'>Sintomas</label>

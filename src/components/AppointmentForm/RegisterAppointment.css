@@ -55,12 +55,11 @@
 .group-form-serv {  
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 1em 1em;
   grid-auto-flow: row;
   grid-template-areas:
     "tprograma tplan tplan"
-    "nauto nauto ."
     "tatencion tservicio modalidad";
 }
 
@@ -83,7 +82,7 @@
   gap: 1em 1em;
   grid-auto-flow: row;
   grid-template-areas:
-    "fecprog horaprog fecauto"
+    "fecprog horaprog ."
     "sintomas sintomas sintomas"
     "diagnostico diagnostico diagnostico";
 }
@@ -95,5 +94,3 @@
 .fecprog { grid-area: fecprog; }
 
 .horaprog { grid-area: horaprog; }
-
-.fecauto { grid-area: fecauto; }
