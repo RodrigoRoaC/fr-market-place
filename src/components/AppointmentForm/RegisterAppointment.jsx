@@ -16,6 +16,7 @@ import { UserContext } from '../../context/UserContext';
 import { parseAppointments } from '../../utils/parser';
 import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
 import { validateAppointmentValues } from '../../utils/validations';
+import { PaymentService } from '../../services/Payment/PaymentService';
 
 function RegisterAppointmentForm({ 
   appointmentDialog, 
@@ -51,8 +52,16 @@ function RegisterAppointmentForm({
   const [filteredDis, setFilteredDis] = useState(null);
   const [selectedDis, setSelectedDis] = useState(null);
 
-  const accept = () => {
-    toast.current.show({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+  const accept = async () => {
+    const paymentService = new PaymentService();
+    const registerRes = await paymentService.register({ cod_solicitud: appointment.cod_solicitud, cod_estado: 1 });
+    if (registerRes.error) {
+      toast.current.show({ severity: 'error', summary: 'Payment Register error', detail: 'Register failed', life: 3000 });
+      return;
+    }
+
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Payment Created', life: 3000 });
+    setAppointmentDialog(false);
   }
 
   const reject = () => {

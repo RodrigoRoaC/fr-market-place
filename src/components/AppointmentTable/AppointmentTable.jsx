@@ -108,7 +108,7 @@ const AppointmentTable = () => {
           currentPageReportTemplate='Showing {first} to {last} of {totalRecords} appointments'
           globalFilter={globalFilter} header={header} responsiveLayout='scroll'>
 
-          <Column field='cod_solicitud' header='Code' sortable style={{ minWidth: '4rem' }} />
+          <Column field='cod_solicitud' header='Código' sortable style={{ minWidth: '4rem' }} />
           <Column field='num_documento' header='Documento' sortable style={{ minWidth: '4rem' }} />
           <Column field='nombres' header='Nombre' sortable style={{ minWidth: '8rem' }} />
           <Column field='ape_paterno' header='Apellido' sortable style={{ minWidth: '4rem' }} />

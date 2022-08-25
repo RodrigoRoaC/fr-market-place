@@ -5,9 +5,17 @@
   border-radius: 5rem;
 }
 
-.status-registrado {
+.status-registrada {
   color: #fff;
   background-color: #17df28;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5rem;
+  min-width: 75px;
+}
+
+.status-anulada {
+  color: #fff;
+  background-color: #df4617;
   padding: 0.3rem 0.5rem;
   border-radius: 5rem;
   min-width: 75px;

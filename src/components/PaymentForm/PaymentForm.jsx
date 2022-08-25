@@ -4,46 +4,40 @@ import { Calendar } from 'primereact/calendar';
 import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 
 import './PaymentForm.css';
-import { AppointmentService } from '../../services/AppointmentService';
 import { UserContext } from '../../context/UserContext';
-import { parseAppointments } from '../../utils/parser';
+import { parsePayments } from '../../utils/parser';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Divider } from 'primereact/divider';
+import { PaymentService } from '../../services/Payment/PaymentService';
 
 function PaymentForm({ 
+  toast, 
   paymentDialog, 
+  payment = {}, 
   setPaymentDialog, 
   submitted,
   setSubmitted,
-  payment = {}, 
   setPayment, 
-  appointments = [],
-  setAppointments, 
-  emptyAppointment, 
-  toast, 
+  payments = [],
+  setPayments, 
+  emptyPayment, 
+  disablePatient,
+  disablePayment,
 }) {
   const { user } = useContext(UserContext);
 
-  const accept = () => {
-    toast.current.show({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
-  }
-
-  const reject = () => {
-    toast.current.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
-  }
-
   const hideDialog = () => {
     setSubmitted(false);
+    setPayment(emptyPayment);
     setPaymentDialog(false);
   }
 
-  const findIndexById = (cod_solicitud) => {
+  const findIndexById = (cod_pago) => {
     let index = -1;
-    for (let i = 0; i < appointments.length; i++) {
-      if (appointments[i].cod_solicitud === cod_solicitud) {
+    for (let i = 0; i < payments.length; i++) {
+      if (payments[i].cod_pago === cod_pago) {
         index = i;
         break;
       }
@@ -61,58 +55,54 @@ function PaymentForm({
   }
 
   const saveAppointment = async () => {
-    const appointmentService = new AppointmentService();
+    const paymentService = new PaymentService();
     setSubmitted(true);
-    let _appointments = [...appointments];
+    let _payments = [...payments];
 
-    if (payment.cod_solicitud) {
-      const index = findIndexById(payment.cod_solicitud);
-      const updateRes = await appointmentService.update({ ...payment, cod_usuario: user.cod_usuario });
+    if (payment.cod_pago) {
+      const index = findIndexById(payment.cod_pago);
+      const updateRes = await paymentService.update({ ...payment, cod_usuario: user.cod_usuario, cod_estado: 2 });
       if (updateRes.error) {
         toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
         return;
       }
-      _appointments[index] = { ...(parseAppointments([updateRes.data])[0]) };
-      toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
+      _payments[index] = { ...(parsePayments([updateRes.data])[0]) };
+      setPayments(_payments);
+      setPayment({ ...(parsePayments([updateRes.data])[0]) });
 
-      setAppointments(_appointments);
-      setPaymentDialog(false);
-      setPayment(emptyAppointment);
+      toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
       return;
     }
-    const registerRes = await appointmentService.register({ ...payment, cod_usuario: user.cod_usuario });
+    const registerRes = await paymentService.register({ ...payment, cod_usuario: user.cod_usuario, cod_estado: 2 });
     if (registerRes.error) {
       toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
       return;
     }
+    setPayments([...(parsePayments(registerRes.data)[0]), ...payments]);
+    setPayment({ ...(parsePayments(registerRes.data)[0]) });
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-    setAppointments([...(parseAppointments(registerRes.data)[0]), ...appointments]);
-    setPaymentDialog(false);
-    setPayment(emptyAppointment);
   }
 
-  const generatePayment = () => {
-    confirmDialog({
-      message: 'Are you sure you want to proceed?',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      position: 'top',
-      accept,
-      reject
-    });
+  const sendPaymentLink = async () => {
+    const paymentService = new PaymentService();
+    const emailRes = await paymentService.sendEmail(payment);
+    if (emailRes.error) {
+      toast.current.show({ severity: 'error', summary: 'Send Payment link Error', detail: 'Send link failed', life: 3000 });
+      return;
+    }
+
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
   }
 
-  const appointmentDialogFooter = (
+  const paymentDialogFooter = (
     <React.Fragment>
-      { payment.descripcion === 'REGISTRADA' && <Button label='Validar Pago' icon='pi pi-wallet' className='p-button-text' onClick={generatePayment} /> }
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
       <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveAppointment} />
     </React.Fragment>
   );
 
   return (
-    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Registrar pago' modal className='p-fluid' footer={appointmentDialogFooter} onHide={hideDialog}>
-      <ConfirmDialog />
+    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Registrar pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
       <div className='div-form-table'>
           <Divider align="left">
             <div className="inline-flex align-items-center">
@@ -122,22 +112,22 @@ function PaymentForm({
           <div className='group-form-contact-payment'>
             <div className='nombre field'>
               <label htmlFor='nombres'>Nombre</label>
-              <InputText id='nombres' value={payment.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.nombres })} disabled/>
+              <InputText id='nombres' value={payment.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.nombres })} disabled={disablePayment}/>
               {submitted && !payment.nombres && <small className='p-error'>Nombre es requerido.</small>}
             </div>
             <div className='apepat field'>
               <label htmlFor='apePat'>Apellido Paterno</label>
-              <InputText id='apePat' value={payment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_paterno })} disabled/>
+              <InputText id='apePat' value={payment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_paterno })} disabled={disablePayment}/>
               {submitted && !payment.ape_paterno && <small className='p-error'>Apellido Paterno es requerido.</small>}
             </div>
             <div className='apemat field'>
               <label htmlFor='apePat'>Apellido Materno</label>
-              <InputText id='apePat' value={payment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_materno })} disabled/>
+              <InputText id='apePat' value={payment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_materno })} disabled={disablePayment}/>
               {submitted && !payment.ape_materno && <small className='p-error'>Apellido Materno es requerido.</small>}
             </div>
             <div className='ndoc field'>
-              <label htmlFor='num_documento'>{ payment.cod_tipo_doc || 'DNI' }</label>
-              <InputText id='num_documento' value={payment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.num_documento })} disabled/>
+              <label htmlFor='num_documento'>{ payment.desc_corta || 'DNI' }</label>
+              <InputText id='num_documento' value={payment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.num_documento })} disabled={disablePayment}/>
               {submitted && !payment.num_documento && <small className='p-error'>Documento es requerido.</small>}
             </div>
             <div className='email field'>
@@ -154,7 +144,7 @@ function PaymentForm({
           <div className='group-form-payment'>
             <div className='nauto field'>
               <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
-              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} />
+              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} disabled={disablePatient}/>
               {submitted && !payment.numero_autorizacion && <small className='p-error'>Numero autorizacion es requerido.</small>}
             </div>
             <div className='fecauto field'>
@@ -162,24 +152,24 @@ function PaymentForm({
               <Calendar dateFormat='dd/mm/yy' id='fecha_autorizacion' value={payment.fecha_autorizacion} onChange={(e) => onInputChange(e, 'fecha_autorizacion')} showIcon />
             </div>
             <div className='fecprog field'>
-              <label htmlFor='fecha_programacion'>Deducible</label>
-              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} />
+              <label htmlFor='deducible'>Deducible</label>
+              <InputText id='deducible' value={payment.deducible || ''} onChange={(e) => onInputChange(e, 'deducible')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.deducible })} disabled={disablePatient} />
             </div>
             <div className='horaprog field'>
-              <label htmlFor='hora_programacion'>Copago</label>
-              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} />
+              <label htmlFor='copago'>Copago</label>
+              <InputText id='copago' value={payment.copago || ''} onChange={(e) => onInputChange(e, 'copago')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.copago })} disabled={disablePatient} />
             </div>
             <div className='link field'>
               <label htmlFor='link_pago'>Link de pago</label>
-              <InputText id='link_pago' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} />
+              <InputText id='link_pago' value={payment.link_pago || ''} onChange={(e) => onInputChange(e, 'link_pago')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.link_pago })} disabled={disablePatient} />
             </div>
             <div className='btnsend field'>
               <label htmlFor='link_pago' className='send-link'>Link de pago</label>
-              <Button label='Enviar link' icon='pi pi-envelope' onClick={saveAppointment} />
+              <Button label='Enviar link' icon='pi pi-envelope' onClick={sendPaymentLink} disabled={disablePatient} />
             </div>
             <div className='diagnostico field'>
-              <label htmlFor='diagnostico'>Observaciones</label>
-              <InputTextarea id='diagnostico' value={payment.diagnostico || ''} onChange={(e) => onInputChange(e, 'diagnostico')} required rows={3} cols={20} />
+              <label htmlFor='observaciones'>Observaciones</label>
+              <InputTextarea id='observaciones' value={payment.observaciones || ''} onChange={(e) => onInputChange(e, 'observaciones')} required rows={3} cols={20}  disabled={disablePatient} />
             </div>
           </div>
       </div>

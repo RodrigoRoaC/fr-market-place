@@ -1,0 +1,25 @@
+let emptyPayment = {
+  cod_pago: '',
+  cod_solicitud: '',
+  cod_estado: '',
+  link_pago: '',
+  deducible: '',
+  copago: '',
+  numero_boleta: '',
+  numero_autorizacion: '',
+  fecha_autorizacion: '',
+  observaciones: '',
+  fecha_cancelacion: '',
+  fec_registro: '',
+  fec_actualizacion: '',
+  descripcion: '',
+  cod_paciente: '',
+  nombres: '',
+  ape_paterno: '',
+  ape_materno: '',
+  num_documento: '',
+  email: '',
+  desc_corta: '',
+}
+
+export default emptyPayment;
