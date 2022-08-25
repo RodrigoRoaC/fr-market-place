@@ -54,7 +54,7 @@ function PaymentForm({
     setPayment(_appointment);
   }
 
-  const saveAppointment = async () => {
+  const savePayment = async () => {
     const paymentService = new PaymentService();
     setSubmitted(true);
     let _payments = [...payments];
@@ -78,14 +78,14 @@ function PaymentForm({
       toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
       return;
     }
-    setPayments([...(parsePayments(registerRes.data)[0]), ...payments]);
-    setPayment({ ...(parsePayments(registerRes.data)[0]) });
+    setPayments([...(parsePayments([registerRes.data])[0]), ...payments]);
+    setPayment({ ...(parsePayments([registerRes.data])[0]) });
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
   }
 
   const sendPaymentLink = async () => {
     const paymentService = new PaymentService();
-    const emailRes = await paymentService.sendEmail(payment);
+    const emailRes = await paymentService.sendEmail({ ...payment, subject: 'Link de pago', template: 'paymentLink' });
     if (emailRes.error) {
       toast.current.show({ severity: 'error', summary: 'Send Payment link Error', detail: 'Send link failed', life: 3000 });
       return;
@@ -94,15 +94,43 @@ function PaymentForm({
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
   }
 
+  const generateVoucherPayment = async () => {
+    const paymentService = new PaymentService();
+    let _payments = [...payments];
+    const voucherRes = await paymentService.confirm({ ...payment, cod_estado: 4, subject: 'Pago exitoso', template: 'confirmPayment' });
+    if (voucherRes.error) {
+      toast.current.show({ severity: 'error', summary: 'Send Payment link Error', detail: 'Send link failed', life: 3000 });
+      return;
+    }
+    const index = findIndexById(payment.cod_pago);
+    _payments[index] = { ...(parsePayments([voucherRes.data.data])[0]) };
+    setPayments(_payments);
+    setPayment(emptyPayment);
+    setPaymentDialog(false);
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
+  }
+
   const validatePayment = async () => {
-    
+    const paymentService = new PaymentService();
+    let _payments = [...payments];
+    const validateRes = await paymentService.validate({ cod_estado: 8, cod_pago: payment.cod_pago });
+    if (validateRes.error) {
+      toast.current.show({ severity: 'error', summary: 'Validate payment Error', detail: 'Validate failed', life: 3000 });
+      return;
+    }
+    const index = findIndexById(payment.cod_pago);
+    _payments[index] = { ...(parsePayments([validateRes.data])[0]) };
+    setPayments(_payments);
+    setPayment({ ...(parsePayments([validateRes.data])[0]) });
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Validated successfully', life: 3000 });
   }
 
   const paymentDialogFooter = (
     <React.Fragment>
+      { payment.descripcion === 'VALIDADA' && <Button label='Generar Comprobante' icon='pi pi-wallet' className='p-button-text' onClick={generateVoucherPayment} /> }
       { payment.descripcion === 'REGISTRADA' && <Button label='Validar Pago' icon='pi pi-wallet' className='p-button-text' onClick={validatePayment} /> }
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
-      <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveAppointment} />
+      <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={savePayment} />
     </React.Fragment>
   );
 

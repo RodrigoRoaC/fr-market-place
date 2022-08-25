@@ -57,4 +57,26 @@ export class PaymentService {
       return { error: err }
     }
   }
+
+  async validate(payment) {
+    try {
+      const response = await client.put('/payment/validate-payment', payment);
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
+
+  async confirm(payment) {
+    try {
+      const response = await client.post('/payment/confirm-payment', payment);
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
 }

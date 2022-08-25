@@ -21,6 +21,22 @@
   min-width: 75px;
 }
 
+.status-validada {
+  color: #fff;
+  background-color: #2417df;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5rem;
+  min-width: 75px;
+}
+
+.status-aceptada {
+  color: #fff;
+  background-color: #cbdf17;
+  padding: 0.3rem 0.5rem;
+  border-radius: 5rem;
+  min-width: 75px;
+}
+
 .appointment-datatable .table-header {
   display: flex;
   align-items: center;
