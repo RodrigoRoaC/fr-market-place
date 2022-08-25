@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { AppointmentService } from '../../services/AppointmentService';
 
 function Home() {
-  const [response, setResponse] = useState(null);
+  const [, setResponse] = useState(null);
 
   useEffect(() => {
     async function healtCheck() {
@@ -14,9 +14,7 @@ function Home() {
   }, []);
 
   return (
-    <>
-      { JSON.stringify(response, null, 2) }
-    </>
+    <div className="home-container"></div>
   )
 }
 
