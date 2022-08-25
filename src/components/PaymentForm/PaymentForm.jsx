@@ -94,8 +94,13 @@ function PaymentForm({
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
   }
 
+  const validatePayment = async () => {
+    
+  }
+
   const paymentDialogFooter = (
     <React.Fragment>
+      { payment.descripcion === 'REGISTRADA' && <Button label='Validar Pago' icon='pi pi-wallet' className='p-button-text' onClick={validatePayment} /> }
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
       <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveAppointment} />
     </React.Fragment>
@@ -144,8 +149,7 @@ function PaymentForm({
           <div className='group-form-payment'>
             <div className='nauto field'>
               <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
-              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.numero_autorizacion })} disabled={disablePatient}/>
-              {submitted && !payment.numero_autorizacion && <small className='p-error'>Numero autorizacion es requerido.</small>}
+              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': false })} disabled={disablePatient}/>
             </div>
             <div className='fecauto field'>
               <label htmlFor='fecha_autorizacion'>Fecha Autorizacion</label>
@@ -157,7 +161,7 @@ function PaymentForm({
             </div>
             <div className='horaprog field'>
               <label htmlFor='copago'>Copago</label>
-              <InputText id='copago' value={payment.copago || ''} onChange={(e) => onInputChange(e, 'copago')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.copago })} disabled={disablePatient} />
+              <InputText id='copago' value={payment.copago || ''} onChange={(e) => onInputChange(e, 'copago')} required autoFocus className={classNames({ 'p-invalid': false })} disabled={disablePatient} />
             </div>
             <div className='link field'>
               <label htmlFor='link_pago'>Link de pago</label>

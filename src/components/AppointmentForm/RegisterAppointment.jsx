@@ -247,8 +247,8 @@ function RegisterAppointmentForm({
       return;
     }
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-    setAppointments([...(parseAppointments(registerRes.data)[0]), ...appointments]);
-    setAppointment({ ...parseAppointments(registerRes.data)[0] });
+    setAppointments([...(parseAppointments([registerRes.data])[0]), ...appointments]);
+    setAppointment({ ...(parseAppointments([registerRes.data]))[0] });
     generatePayment();
   }
 
