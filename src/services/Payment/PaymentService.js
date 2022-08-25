@@ -3,7 +3,7 @@ import client from "../../utils/axios";
 export class PaymentService {
   async getPaymentsBy(cod_tipo_perfil, codigo) {
     try {
-      const url = [6, 7].includes(cod_tipo_perfil) ? `/payment?patientId=${codigo}` : `/payment/${codigo}`;
+      const url = [6, 7].includes(cod_tipo_perfil) ? `/payment/patient/list?codUsuario=${codigo}` : `/payment/${codigo}`;
 
       const response = await client.get(url);
 

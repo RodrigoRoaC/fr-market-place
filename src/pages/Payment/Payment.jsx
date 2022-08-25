@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import PaymentForm from '../../components/PaymentForm/PaymentForm';
+import PaymentFormPatient from '../../components/PaymentForm/PaymentFormPatient';
 import PaymentTable from '../../components/PaymentTable/PaymentTable';
 import { UserContext } from '../../context/UserContext';
 import emptyPayment from '../../data/payment';
@@ -64,10 +65,27 @@ const Payment = () => {
           : (
               <>
                 <PaymentTable 
-                    toast = {toast}
-                    paymentDialog = {paymentDialog}
-                    setPaymentDialog = {setPaymentDialog}
-                    setPayment = {setPayment}
+                  toast = {toast}
+                  setPaymentDialog = {setPaymentDialog}
+                  setPayment = {setPayment}
+                  payments = {payments}
+                  setPayments = {setPayments}
+                  userPerfil = {user.cod_perfil}
+                  payment = {payment}
+                />
+                <PaymentFormPatient
+                  toast = {toast}
+                  paymentDialog = {paymentDialog}
+                  payment = {payment}
+                  setPaymentDialog = {setPaymentDialog}
+                  submitted = {submitted}
+                  setSubmitted = {setSubmitted}
+                  setPayment = {setPayment}
+                  payments = {payments}
+                  setPayments = {setPayments}
+                  emptyPayment = {emptyPayment}
+                  disablePatient = {disablePatient}
+                  disablePayment = {disablePayment}
                 />
               </>
             )

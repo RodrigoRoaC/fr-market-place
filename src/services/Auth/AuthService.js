@@ -11,4 +11,16 @@ export class AuthService {
       return { error: err }
     }
   }
+
+  async authenticateUNR(payload) {
+    try {
+      console.log(payload);
+      const response = await client.post('/auth/authenticate-unr', payload);
+  
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
 }

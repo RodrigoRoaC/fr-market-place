@@ -11,4 +11,15 @@ export class UserService {
       return { error: err }
     }
   }
+
+  async updateUserPayment(payment) {
+    try {
+      const response = await client.put(`/user/update-user-payment`, payment);
+  
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
 }

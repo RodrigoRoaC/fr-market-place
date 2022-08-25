@@ -16,6 +16,7 @@ export const LoginForm = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [showError, setShowError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [formData1, setFormData1] = useState({});
   const [activeIndex, setActiveIndex] = useState(0);
 
   const { setUser } = useContext(UserContext);
@@ -29,6 +30,20 @@ export const LoginForm = () => {
 
     if (!data.clave) {
       errors.clave = 'Clave is required.';
+    }
+
+    return errors;
+  };
+
+  const validateUNR = (data) => {
+    let errors = {};
+
+    if (!data.num_documento) {
+      errors.num_documento = 'Numero de documento es requerido.';
+    }
+
+    if (!data.fec_nacimiento) {
+      errors.fec_nacimiento = 'Fecha de nacimiento es requerido.';
     }
 
     return errors;
@@ -50,14 +65,13 @@ export const LoginForm = () => {
 
   const onSubmit1 = async (data, form) => {
     const authService = new AuthService();
-    console.log('Entro!');
-    const loginResponse = await authService.authenticate(data);
+    const loginResponse = await authService.authenticateUNR(data);
     if (loginResponse.error) {
       setShowError(true);
       return;
     }
     setUser(loginResponse.data);
-    setFormData(data);
+    setFormData1(data);
     setShowMessage(true);
     form.restart();
   };
@@ -109,7 +123,7 @@ export const LoginForm = () => {
             ></i>
             <h5>Login Successful!</h5>
             <p style={{ lineHeight: 1.5, textIndent: '1rem' }}>
-              Welcome <b>{formData.username}</b>
+              Welcome <b>{formData.username || formData1.num_documento}</b>
             </p>
           </div>
         </Dialog>
@@ -210,7 +224,7 @@ export const LoginForm = () => {
                 <Form
                   onSubmit={onSubmit1}
                   initialValues={{ num_documento: '', fec_nacimiento: '' }}
-                  validate={validate}
+                  validate={validateUNR}
                   render={({ handleSubmit }) => (
                     <form onSubmit={handleSubmit} className="p-fluid">
                       <Field
