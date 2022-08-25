@@ -48,9 +48,11 @@ function Sidebar() {
               );
             })
           }
-          <li className='cerrar-sesion nav-text'>
-            <Button icon='pi pi-power-off' className='white p-button-text' label='Cerrar Sesión' onClick={logOut}/>
-          </li>
+          <div className='cerrar-sesion'>
+            <li className=' nav-text'>
+              <Button icon='pi pi-power-off' className='white p-button-text' label='Cerrar Sesión' onClick={logOut}/>
+            </li>
+          </div>
         </ul>
       </nav>
     </>

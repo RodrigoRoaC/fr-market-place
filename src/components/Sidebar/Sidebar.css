@@ -1,5 +1,5 @@
 .navbar {
-  background-color: var(--indigo-400);
+  background-color: var(--indigo-500);
   height: 80px;
   width: 100vw;
   display: inline-block;
@@ -24,7 +24,7 @@
 }
 
 .nav-menu {
-  background-color: var(--indigo-500);
+  background-color: var(--indigo-400);
   width: 250px;
   height: 100vh;
   display: flex;
@@ -62,7 +62,7 @@
 }
 
 .nav-text a:hover {
-  background-color: var(--indigo-400);
+  background-color: var(--indigo-500);
 }
 
 .nav-menu-items {
@@ -72,7 +72,7 @@
 }
 
 .navbar-toggle {
-  background-color: var(--indigo-500);
+  background-color: var(--indigo-400);
   width: 100%;
   height: 80px;
   display: flex;
@@ -86,4 +86,9 @@
 
 .white {
   color: #fff !important;
+}
+
+.cerrar-sesion {
+  position: absolute;
+  bottom: .5rem;
 }
