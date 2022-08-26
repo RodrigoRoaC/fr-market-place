@@ -65,7 +65,8 @@ function RegisterAppointmentForm({
   }
 
   const reject = () => {
-      toast.current.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+    toast.current.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+    setAppointmentDialog(false);
   }
 
   const hideDialog = () => {
@@ -225,7 +226,7 @@ function RegisterAppointmentForm({
       toast.current.show({ severity: 'error', summary: 'Appoinment Error', detail: 'Complete fields', life: 3000 });
       return;
     }
-
+    
     if (appointment.cod_solicitud) {
       const index = findIndexById(appointment.cod_solicitud);
       const updateRes = await appointmentService.update({ ...appointment, cod_usuario: user.cod_usuario });
@@ -246,9 +247,10 @@ function RegisterAppointmentForm({
       toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
       return;
     }
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-    setAppointments([...(parseAppointments([registerRes.data])[0]), ...appointments]);
+
+    setAppointments([...parseAppointments([registerRes.data]), ..._appointments]);
     setAppointment({ ...(parseAppointments([registerRes.data]))[0] });
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
     generatePayment();
   }
 

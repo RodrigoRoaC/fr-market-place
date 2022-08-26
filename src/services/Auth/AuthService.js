@@ -14,7 +14,6 @@ export class AuthService {
 
   async authenticateUNR(payload) {
     try {
-      console.log(payload);
       const response = await client.post('/auth/authenticate-unr', payload);
   
       return { data: response.data };
