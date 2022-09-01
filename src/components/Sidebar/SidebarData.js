@@ -15,7 +15,13 @@ export const SidebarData = [
     title: 'Pagos',
     path: '/payment',
     cName: 'nav-text',
-    acl: [1, 2, 3, 7]
+    acl: [1, 3, 6, 7]
+  },
+  {
+    title: 'Medicos',
+    path: '/medical-availability',
+    cName: 'nav-text',
+    acl: [1, 4]
   },
   {
     title: 'Citas',

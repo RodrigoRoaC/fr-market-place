@@ -1,52 +1,91 @@
-
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { AppointmentService } from '../../services/AppointmentService';
+import { AppointmentService } from '../../../services/AppointmentService';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 
-import './AppointmentTable.css';
-import { UserContext } from '../../context/UserContext';
-import AssignForm from '../AssignForm/AssignForm';
-import { UserService } from '../../services/User/UserService';
-import emptyAppointment from '../../data/appointment';
+import './RequestCrud.css';
+import { UserContext } from '../../../context/UserContext';
+import { parseAppointments } from '../../../utils/parser';
+import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
+import emptyAppointment from '../../../data/appointment';
+import RequestForm from '../RequestForm/RequestForm';
 
-const AppointmentTable = () => {
-  const [operator, setOperator] = useState(null);
+const RequestCrud = () => {
   const [appointments, setAppointments] = useState(null);
-  const [assignDialog, setAssignDialog] = useState(false);
+  const [appointmentDialog, setAppointmentDialog] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
   const [appointment, setAppointment] = useState({...emptyAppointment});
   const [selectedAppointments, setSelectedAppointments] = useState(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
   const dt = useRef(null);
+  
+  const [tipoDocumento, setTipoDocumento] = useState(null);
+  
+  const [departamento, setDepartamento] = useState(null);
+  const [provincia, setProvincia] = useState(null);
+  const [distrito, setDistrito] = useState(null);
+  
+  const [tipoPlan, setTipoPlan] = useState(null);
+  const [tipoPrograma, setTipoPrograma] = useState(null);
+  const [tipoAtencion, setTipoAtencion] = useState(null);
+  const [tipoModalidad, setTipoModalidad] = useState(null);
+  const [tipoServicio, setTServicio] = useState(null);
 
   const appointmentService = new AppointmentService();
-  const userService = new UserService();
   const { user } = useContext(UserContext);
 
   useEffect(() => {
     appointmentService.getAppointmentsBy(user.cod_usuario)
-      .then(res => setAppointments(res.data))
+      .then(res => setAppointments(parseAppointments(res.data)))
       .catch(err => {
         console.error(err);
         setAppointments([]);
       });
-    userService.getOperators()
-      .then(res => setOperator(res.data));
+
+    appointmentService.getComboData()
+      .then(({ data }) => {
+        setTipoDocumento(data.tipoDocumento);
+        setDepartamento(data.departamento);
+        setTipoPlan(data.planesData);
+        setTipoPrograma(data.iafaData);
+        setTipoAtencion(data.atencionData);
+        setTipoModalidad(data.modalidadData);
+        setTServicio(data.servicioData);
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const openNew = () => {
+    setAppointment(emptyAppointment);
+    setSubmitted(false);
+    setAppointmentDialog(true);
+  }
 
   const hideDeleteAppointmentDialog = () => {
     setDeleteAppointmentDialog(false);
   }
 
-  const editAppointment = (appointment) => {
+  const editAppointment = async (appointment) => {
+    const ubigeoService = new UbigeoService();
     setAppointment({...appointment});
-    setAssignDialog(true);
+    if (appointment.departamento) {
+      const { error, data: prov } = await ubigeoService.getProvincias(appointment.departamento);
+      if (!error) {
+        setProvincia(prov);
+      }
+    }
+    if (appointment.departamento && appointment.provincia) {
+      const { error, data: dis } = await ubigeoService.getDistritos(appointment.departamento, appointment.provincia);
+      if (!error) {
+        setDistrito(dis);
+      }
+    }
+    setAppointmentDialog(true);
   }
 
   const confirmDeleteappointment = (appointment) => {
@@ -68,7 +107,7 @@ const AppointmentTable = () => {
   }
 
   const statusBodyTemplate = (rowData) => {
-    return <span className={`appointment-badge status-${rowData.descripcion.toLowerCase()}`}>{rowData.descripcion}</span>;
+    return <span className={`appointment-badge status-${rowData.descripcion?.toLowerCase()}`}>{rowData.descripcion}</span>;
   }
 
   const actionBodyTemplate = (rowData) => {
@@ -86,6 +125,7 @@ const AppointmentTable = () => {
       <span className='p-input-icon-left'>
         <i className='pi pi-search' />
         <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value || ' ')} placeholder='Search...' />
+        <Button label='New' icon='pi pi-plus' className='white new-button' onClick={openNew} />
       </span>
     </div>
   );
@@ -98,7 +138,7 @@ const AppointmentTable = () => {
   );
 
   return (
-    <div className='appointment-datatable'>
+    <div className='datatable-appointment'>
       <Toast ref={toast} />
 
       <div className='card'>
@@ -119,14 +159,28 @@ const AppointmentTable = () => {
         </DataTable>
       </div>
 
-      <AssignForm 
-        operator = {operator}
-        assignDialog = {assignDialog}
-        setAssignDialog = {setAssignDialog}
-        toast = {toast}
-        codSolicitud = {appointment.cod_solicitud}
+      <RequestForm 
+        appointmentDialog = {appointmentDialog}
+        setAppointmentDialog = {setAppointmentDialog}
+        submitted = {submitted}
+        setSubmitted = {setSubmitted}
+        appointment = {appointment}
+        setAppointment = {setAppointment}
         appointments = {appointments}
         setAppointments = {setAppointments}
+        emptyAppointment = {emptyAppointment}
+        toast = {toast}
+        tipoDocumento = {tipoDocumento}
+        departamento = {departamento}
+        provincia = {provincia}
+        setProvincia = {setProvincia}
+        distrito = {distrito}
+        setDistrito = {setDistrito}
+        tipoPlan = {tipoPlan}
+        tipoPrograma = {tipoPrograma}
+        tipoAtencion = {tipoAtencion}
+        tipoModalidad = {tipoModalidad}
+        tipoServicio = {tipoServicio}
       />
 
       <Dialog visible={deleteAppointmentDialog} style={{ width: '450px' }} header='Confirm' modal footer={deleteAppointmentDialogFooter} onHide={hideDeleteAppointmentDialog}>
@@ -139,4 +193,4 @@ const AppointmentTable = () => {
   );
 }
 
-export default AppointmentTable;
+export default RequestCrud;

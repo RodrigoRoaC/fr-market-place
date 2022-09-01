@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import React, { useState } from 'react';
-import { AppointmentService } from '../../services/AppointmentService';
+import { AppointmentService } from '../../../services/AppointmentService';
 
 const AssignForm = ({
   appointments,

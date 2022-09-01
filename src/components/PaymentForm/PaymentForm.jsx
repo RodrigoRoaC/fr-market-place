@@ -61,7 +61,8 @@ function PaymentForm({
 
     if (payment.cod_pago) {
       const index = findIndexById(payment.cod_pago);
-      const updateRes = await paymentService.update({ ...payment, cod_usuario: user.cod_usuario, cod_estado: 2 });
+      const getEstado = payment.cod_estado === 1 ? 2 : payment.cod_estado;
+      const updateRes = await paymentService.update({ ...payment, cod_usuario: user.cod_usuario, cod_estado: getEstado });
       if (updateRes.error) {
         toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
         return;
@@ -105,8 +106,8 @@ function PaymentForm({
     const index = findIndexById(payment.cod_pago);
     _payments[index] = { ...(parsePayments([voucherRes.data.data])[0]) };
     setPayments(_payments);
-    setPayment(emptyPayment);
     setPaymentDialog(false);
+    setPayment(emptyPayment);
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
   }
 

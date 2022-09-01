@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import AppointmentTable from '../../components/AppointmentTable/AppointmentTable';
-import DataTableCrud from '../../components/DataTableCrud/DataTableCrud'
+import RequestCrud from '../../components/Appointment/RequestTable/RequestCrud';
+import RequestTable from '../../components/Appointment/RequestTable/RequestTable';
 import { UserContext } from '../../context/UserContext';
 
 function Appointment() {
@@ -10,10 +10,9 @@ function Appointment() {
     <div className = 'wrapper'>
       {
         user.cod_perfil === 3 
-          ? <DataTableCrud />
-          : <AppointmentTable />
+          ? <RequestCrud />
+          : <RequestTable />
       }
-      
     </div>
   )
 }

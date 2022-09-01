@@ -10,15 +10,15 @@ import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 
-import './RegisterAppointment.css';
-import { AppointmentService } from '../../services/AppointmentService';
-import { UserContext } from '../../context/UserContext';
-import { parseAppointments } from '../../utils/parser';
-import { UbigeoService } from '../../services/Ubigeo/UbigeoService';
-import { validateAppointmentValues } from '../../utils/validations';
-import { PaymentService } from '../../services/Payment/PaymentService';
+import './RequestForm.css';
+import { AppointmentService } from '../../../services/AppointmentService';
+import { UserContext } from '../../../context/UserContext';
+import { parseAppointments } from '../../../utils/parser';
+import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
+import { validateAppointmentValues } from '../../../utils/validations';
+import { PaymentService } from '../../../services/Payment/PaymentService';
 
-function RegisterAppointmentForm({ 
+function RequestForm({ 
   appointmentDialog, 
   setAppointmentDialog, 
   submitted,
@@ -52,9 +52,9 @@ function RegisterAppointmentForm({
   const [filteredDis, setFilteredDis] = useState(null);
   const [selectedDis, setSelectedDis] = useState(null);
 
-  const accept = async () => {
+  const accept = async (codSolicitud) => {
     const paymentService = new PaymentService();
-    const registerRes = await paymentService.register({ cod_solicitud: appointment.cod_solicitud, cod_estado: 1 });
+    const registerRes = await paymentService.register({ cod_solicitud: codSolicitud || appointment.cod_solicitud, cod_estado: 1 });
     if (registerRes.error) {
       toast.current.show({ severity: 'error', summary: 'Payment Register error', detail: 'Register failed', life: 3000 });
       return;
@@ -239,7 +239,7 @@ function RegisterAppointmentForm({
 
       setAppointments(_appointments);
       setAppointment({ ...(parseAppointments([updateRes.data])[0]) });
-      generatePayment();
+      generatePayment(updateRes.data.cod_solicitud)();
       return;
     }
     const registerRes = await appointmentService.register({ ...appointment, cod_usuario: user.cod_usuario });
@@ -251,23 +251,23 @@ function RegisterAppointmentForm({
     setAppointments([...parseAppointments([registerRes.data]), ..._appointments]);
     setAppointment({ ...(parseAppointments([registerRes.data]))[0] });
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-    generatePayment();
+    generatePayment(registerRes.data.cod_solicitud)();
   }
 
-  const generatePayment = () => {
+  const generatePayment = (codSolicitud) => () => {
     confirmDialog({
       message: '¿Desea generar orden de pago?',
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       position: 'center',
-      accept,
+      accept: accept.bind(this, codSolicitud),
       reject
     });
   }
 
   const appointmentDialogFooter = (
     <React.Fragment>
-      { appointment.descripcion === 'REGISTRADA' && <Button label='Generar Pago' icon='pi pi-wallet' className='p-button-text' onClick={generatePayment} /> }
+      { appointment.descripcion === 'REGISTRADA' && <Button label='Generar Pago' icon='pi pi-wallet' className='p-button-text' onClick={generatePayment()} /> }
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
       <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveAppointment} />
     </React.Fragment>
@@ -399,4 +399,4 @@ function RegisterAppointmentForm({
   )
 }
 
-export default RegisterAppointmentForm;
+export default RequestForm;
