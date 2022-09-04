@@ -1,0 +1,81 @@
+
+/**
+  Form
+*/
+
+.p-dialog-header { 
+  border-bottom: 1px solid var(--gray-500) !important;
+}
+
+.p-dialog-footer { 
+  border-top: 1px solid var(--gray-300) !important;
+  padding: 1rem !important;
+}
+
+.group-form-register-doctor {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nombre nombre apepat apepat apemat apemat"
+    "ndoc ndoc email email email email"
+}
+
+.nombre { grid-area: nombre; }
+
+.tdoc { grid-area: tdoc; }
+
+.apepat { grid-area: apepat; }
+
+.apemat { grid-area: apemat; }
+
+.ndoc { grid-area: ndoc; }
+
+.fnac { grid-area: fnac; }
+
+.tel1 { grid-area: tel1; }
+
+.tel2 { grid-area: tel2; }
+
+.depa { grid-area: depa; }
+
+.prov { grid-area: prov; }
+
+.dist { grid-area: dist; }
+
+.email { grid-area: email; }
+
+.direc { grid-area: direc; }
+
+.group-form-availability-doctor {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nauto nauto fecauto"
+    "fecprog horaprog ."
+    "link link btnsend"
+    "diagnostico diagnostico diagnostico";
+}
+
+.sintomas { grid-area: sintomas; }
+
+.diagnostico { grid-area: diagnostico; }
+
+.fecprog { grid-area: fecprog; }
+
+.horaprog { grid-area: horaprog; }
+
+.nauto { grid-area: nauto; }
+
+.fecauto { grid-area: fecauto; }
+
+.link { grid-area: link; }
+
+.btnsend { grid-area: btnsend; }
+
+.send-link { color: #fff }

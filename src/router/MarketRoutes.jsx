@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar/Sidebar';
 import HomePage from '../pages/Home/Home';
 import AppointmentPage from '../pages/Appointment/Appointment';
 import PaymentPage from '../pages/Payment/Payment';
+import DoctorPage from '../pages/Doctor/Doctor';
 
 function MarketRoutes() {
   return (
@@ -16,6 +17,7 @@ function MarketRoutes() {
         <Route path='/profile' element={<AppointmentPage />} />
         <Route path='/request-appointment' element={<AppointmentPage />} />
         <Route path='/medical-appointment' element={<AppointmentPage />} />
+        <Route path='/medical-availability' element={<DoctorPage />} />
 
         <Route path='/*' element={<Navigate to='/' />}/>
       </Routes>

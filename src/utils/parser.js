@@ -14,6 +14,11 @@ export const parsePayments = (payments = []) => payments.map((pay) => ({
   fecha_autorizacion: pay.fecha_autorizacion ? new Date(pay.fecha_cancelacion) : null,
 }));
 
+export const parseDoctors = (doctors = []) => doctors.map((doc) => ({
+  ...doc,
+  fecha_reserva: doc.fecha_reserva ? new Date(doc.fecha_reserva) : null,
+}));
+
 const parseTime = (time) => {
   const [fec] = new Date().toISOString().split('T');
   const [hours, minutes, sec] = time.split(':');
