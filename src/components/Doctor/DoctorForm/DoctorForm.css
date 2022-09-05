@@ -15,12 +15,13 @@
 .group-form-register-doctor {  
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   gap: 1em 1em;
   grid-auto-flow: row;
   grid-template-areas:
     "nombre nombre apepat apepat apemat apemat"
-    "ndoc ndoc email email email email"
+    "username username tipodoc tipodoc ndoc ndoc"
+    "especialidad especialidad especialidad tatencion tatencion tatencion"
 }
 
 .nombre { grid-area: nombre; }
@@ -33,49 +34,25 @@
 
 .ndoc { grid-area: ndoc; }
 
-.fnac { grid-area: fnac; }
+.tipodoc { grid-area: tipodoc; }
 
-.tel1 { grid-area: tel1; }
+.username { grid-area: username; }
 
-.tel2 { grid-area: tel2; }
+.especialidad { grid-area: especialidad; }
 
-.depa { grid-area: depa; }
-
-.prov { grid-area: prov; }
-
-.dist { grid-area: dist; }
-
-.email { grid-area: email; }
-
-.direc { grid-area: direc; }
+.tatencion { grid-area: tatencion; }
 
 .group-form-availability-doctor {  
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1.5fr;
+  grid-template-rows: 1fr 1fr;
   gap: 1em 1em;
   grid-auto-flow: row;
   grid-template-areas:
-    "nauto nauto fecauto"
-    "fecprog horaprog ."
-    "link link btnsend"
-    "diagnostico diagnostico diagnostico";
+    "fecdispo fecdispo venhor"
+    ". . ."
 }
 
-.sintomas { grid-area: sintomas; }
+.fecdispo { grid-area: fecdispo; }
 
-.diagnostico { grid-area: diagnostico; }
-
-.fecprog { grid-area: fecprog; }
-
-.horaprog { grid-area: horaprog; }
-
-.nauto { grid-area: nauto; }
-
-.fecauto { grid-area: fecauto; }
-
-.link { grid-area: link; }
-
-.btnsend { grid-area: btnsend; }
-
-.send-link { color: #fff }
+.venhor { grid-area: venhor; }

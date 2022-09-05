@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
+import DoctorForm from '../../components/Doctor/DoctorForm/DoctorForm';
 import DoctorTable from '../../components/Doctor/DoctorTable/DoctorTable'
 import emptyDoctor from '../../data/doctor';
+import { AppointmentService } from '../../services/AppointmentService';
 import { DoctorService } from '../../services/Doctor/DoctorService';
 
 const Doctor = () => {
@@ -10,9 +12,13 @@ const Doctor = () => {
   const [doctorDialog, setDoctorDialog] = useState(false);
   const [doctor, setDoctor] = useState({ ...emptyDoctor });  
 
-  const [doctors, setDoctors] = useState(null);    
+  const [doctors, setDoctors] = useState(null);
+  const [especilidades, setEspecilidades] = useState(null);
+  const [ventanaHoraria, setVentanaHoraria] = useState(null);
+  const [tipoDocumentos, setTipoDocumentos] = useState(null);
 
   const doctorService = new DoctorService();
+  const appointmentService = new AppointmentService();
 
   useEffect(() => {
     doctorService.getAllDoctors()
@@ -20,6 +26,20 @@ const Doctor = () => {
       .catch(err => {
         console.error(err);
       });
+    doctorService.getVentanaHoraria()
+      .then(res => setVentanaHoraria(res.data))
+      .catch(err => {
+        console.error(err);
+      });
+    doctorService.getEspecialidades()
+      .then(res => setEspecilidades(res.data))
+      .catch(err => {
+        console.error(err);
+      });
+      appointmentService.getComboData()
+        .then(({ data }) => {
+          setTipoDocumentos(data.tipoDocumento);
+        });
   })
 
   return (
@@ -34,10 +54,24 @@ const Doctor = () => {
         setDoctors = {setDoctors}
         setMode = {setMode}
         setSubmitted = {setSubmitted}
+      />
+      <DoctorForm
+        toast = {toast}
+        emptyDoctor = {emptyDoctor}
+        doctorDialog = {doctorDialog}
+        setDoctorDialog = {setDoctorDialog}
+
+        doctor = {doctor}
+        setDoctor = {setDoctor}
+        doctors = {doctors}
+        setDoctors = {setDoctors}
 
         submitted = {submitted}
+        setSubmitted = {setSubmitted}
         mode = {mode}
-        doctorDialog = {doctorDialog}
+        especilidades = {especilidades}
+        ventanaHoraria = {ventanaHoraria}
+        tipoDocumentos = {tipoDocumentos}
       />
     </div>
   )

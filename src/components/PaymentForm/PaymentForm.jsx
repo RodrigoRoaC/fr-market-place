@@ -79,7 +79,7 @@ function PaymentForm({
       toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
       return;
     }
-    setPayments([...(parsePayments([registerRes.data])[0]), ...payments]);
+    setPayments([...(parsePayments([registerRes.data])), ...payments]);
     setPayment({ ...(parsePayments([registerRes.data])[0]) });
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
   }

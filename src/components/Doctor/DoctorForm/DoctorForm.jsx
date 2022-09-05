@@ -1,43 +1,56 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { classNames } from 'primereact/utils';
 import { Calendar } from 'primereact/calendar';
+import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 
 import './DoctorForm.css';
-import { UserContext } from '../../context/UserContext';
-import { parsePayments } from '../../utils/parser';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { Divider } from 'primereact/divider';
-import { PaymentService } from '../../services/Payment/PaymentService';
+
+import { Dropdown } from 'primereact/dropdown';
+import { DoctorService } from '../../../services/Doctor/DoctorService';
+import { parseDoctors } from '../../../utils/parser';
+import { UserContext } from '../../../context/UserContext';
 
 function DoctorForm({ 
   toast, 
-  paymentDialog, 
-  payment = {}, 
-  setPaymentDialog, 
+  emptyDoctor, 
+  doctorDialog, 
+  setDoctorDialog, 
+
+  doctor = {}, 
+  setDoctor, 
+  doctors = [],
+  setDoctors, 
+
   submitted,
   setSubmitted,
-  setPayment, 
-  payments = [],
-  setPayments, 
-  emptyPayment, 
-  disablePatient,
-  disablePayment,
+  mode,
+  especilidades = [],
+  ventanaHoraria = [],
+  tipoDocumentos = [],
 }) {
   const { user } = useContext(UserContext);
 
+  const [selectedHorarios, setSelectedHorarios] = useState([]);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [date, setDate] = useState(null);
+
   const hideDialog = () => {
     setSubmitted(false);
-    setPayment(emptyPayment);
-    setPaymentDialog(false);
+    setSelectedHorarios([]);
+    setSelectedDates([]);
+    setDate(null);
+    setDoctor(emptyDoctor);
+    setDoctorDialog(false);
   }
 
   const findIndexById = (cod_pago) => {
     let index = -1;
-    for (let i = 0; i < payments.length; i++) {
-      if (payments[i].cod_pago === cod_pago) {
+    for (let i = 0; i < doctors.length; i++) {
+      if (doctors[i].cod_pago === cod_pago) {
         index = i;
         break;
       }
@@ -48,62 +61,77 @@ function DoctorForm({
 
   const onInputChange = (e, name) => {
     const val = (e.target && e.target.value) || '';
-    let _appointment = {...payment};
-    _appointment[`${name}`] = val;
+    let _doctor = {...doctor};
+    _doctor[`${name}`] = val;
 
-    setPayment(_appointment);
+    setDoctor(_doctor);
   }
 
-  const savePayment = async () => {
-    const paymentService = new PaymentService();
+  const saveDoctor = async () => {
+    const doctorService = new DoctorService();
     setSubmitted(true);
-    let _payments = [...payments];
+    let _doctors = [...doctors];
 
-    if (payment.cod_pago) {
-      const index = findIndexById(payment.cod_pago);
-      const getEstado = payment.cod_estado === 1 ? 2 : payment.cod_estado;
-      const updateRes = await paymentService.update({ ...payment, cod_usuario: user.cod_usuario, cod_estado: getEstado });
+    if (mode !== 'CREATE') {
+      const index = findIndexById(doctor.cod_pago);
+      const getEstado = doctor.cod_estado === 1 ? 2 : doctor.cod_estado;
+      const updateRes = await doctorService.update({ ...doctor, cod_usuario: user.cod_usuario, cod_estado: getEstado });
       if (updateRes.error) {
-        toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
+        toast.current.show({ severity: 'error', summary: 'Doctor Edit error', detail: 'Edit failed', life: 3000 });
         return;
       }
-      _payments[index] = { ...(parsePayments([updateRes.data])[0]) };
-      setPayments(_payments);
-      setPayment({ ...(parsePayments([updateRes.data])[0]) });
+      _doctors[index] = { ...(parseDoctors([updateRes.data])[0]) };
+      setDoctors(_doctors);
+      setDoctor({ ...(parseDoctors([updateRes.data])[0]) });
 
-      toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
+      toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Doctor Updated', life: 3000 });
       return;
     }
-    const registerRes = await paymentService.register({ ...payment, cod_usuario: user.cod_usuario, cod_estado: 2 });
+    const registerRes = await doctorService.register({ ...doctor, cod_resp: user.cod_usuario });
     if (registerRes.error) {
-      toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
-      return;
-    }
-    setPayments([...(parsePayments([registerRes.data])[0]), ...payments]);
-    setPayment({ ...(parsePayments([registerRes.data])[0]) });
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
-  }
-
-  const sendPaymentLink = async () => {
-    const paymentService = new PaymentService();
-    const emailRes = await paymentService.sendEmail({ ...payment, subject: 'Link de pago', template: 'paymentLink' });
-    if (emailRes.error) {
-      toast.current.show({ severity: 'error', summary: 'Send Payment link Error', detail: 'Send link failed', life: 3000 });
+      toast.current.show({ severity: 'error', summary: 'Doctor Register error', detail: 'Register failed', life: 3000 });
       return;
     }
 
-    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Link sended successfully', life: 3000 });
+    setDoctors([...(parseDoctors([registerRes.data])), ...doctors]);
+    setDoctor(emptyDoctor);
+    setDoctorDialog(false);
+    toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Doctor Created', life: 3000 });
   }
 
-  const paymentDialogFooter = (
+  const onMultiChange = (e, name) => {
+    const values = e.value;
+    let _doctor = { ...doctor };
+    _doctor[`${name}`] = values;
+
+    setDoctor(_doctor);
+    setSelectedHorarios(values);
+  }
+
+  const onDateChange = (e, name) => {
+    const values = e.value;
+    let _doctor = { ...doctor };
+    _doctor[`${name}`] = values;
+
+    setDoctor(_doctor);
+
+    if (mode === 'CREATE') {
+      setSelectedDates(values);
+      return;
+    }
+
+    setDate(values);
+  }
+
+  const doctorDialogFooter = (
     <React.Fragment>
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
-      <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={savePayment} />
+      <Button label='Completar Datos' icon='pi pi-check' className='p-button-text' onClick={saveDoctor} />
     </React.Fragment>
   );
 
   return (
-    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Registrar pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
+    <Dialog visible={doctorDialog} style={{ width: '650px'}} header='Registrar doctor' modal className='p-fluid' footer={doctorDialogFooter} onHide={hideDialog}>
       <div className='div-form-table'>
           <Divider align="left">
             <div className="inline-flex align-items-center">
@@ -113,63 +141,59 @@ function DoctorForm({
           <div className='group-form-register-doctor'>
             <div className='nombre field'>
               <label htmlFor='nombres'>Nombre</label>
-              <InputText id='nombres' value={payment.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.nombres })} disabled={disablePayment}/>
-              {submitted && !payment.nombres && <small className='p-error'>Nombre es requerido.</small>}
+              <InputText id='nombres' value={doctor.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !doctor.nombres })} />
+              {submitted && !doctor.nombres && <small className='p-error'>Nombre es requerido.</small>}
             </div>
             <div className='apepat field'>
               <label htmlFor='apePat'>Apellido Paterno</label>
-              <InputText id='apePat' value={payment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_paterno })} disabled={disablePayment}/>
-              {submitted && !payment.ape_paterno && <small className='p-error'>Apellido Paterno es requerido.</small>}
+              <InputText id='apePat' value={doctor.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required className={classNames({ 'p-invalid': submitted && !doctor.ape_paterno })} />
+              {submitted && !doctor.ape_paterno && <small className='p-error'>Apellido Paterno es requerido.</small>}
             </div>
             <div className='apemat field'>
               <label htmlFor='apePat'>Apellido Materno</label>
-              <InputText id='apePat' value={payment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.ape_materno })} disabled={disablePayment}/>
-              {submitted && !payment.ape_materno && <small className='p-error'>Apellido Materno es requerido.</small>}
+              <InputText id='apePat' value={doctor.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required className={classNames({ 'p-invalid': submitted && !doctor.ape_materno })} />
+              {submitted && !doctor.ape_materno && <small className='p-error'>Apellido Materno es requerido.</small>}
             </div>
             <div className='ndoc field'>
-              <label htmlFor='num_documento'>{ payment.desc_corta || 'DNI' }</label>
-              <InputText id='num_documento' value={payment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.num_documento })} disabled={disablePayment}/>
-              {submitted && !payment.num_documento && <small className='p-error'>Documento es requerido.</small>}
+              <label htmlFor='num_documento'>{ doctor.desc_corta || 'DNI' }</label>
+              <InputText id='num_documento' value={doctor.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required className={classNames({ 'p-invalid': submitted && !doctor.num_documento })} />
+              {submitted && !doctor.num_documento && <small className='p-error'>Documento es requerido.</small>}
             </div>
-            <div className='email field'>
-              <label htmlFor='email'>Email</label>
-              <InputText id='email' value={payment.email || ''} onChange={(e) => onInputChange(e, 'email')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.email })} />
-              {submitted && !payment.email && <small className='p-error'>Email es requerido.</small>}
+            <div className='username field'>
+              <label htmlFor='username'>Username</label>
+              <InputText id='username' value={doctor.username || ''} onChange={(e) => onInputChange(e, 'username')} required className={classNames({ 'p-invalid': submitted && !doctor.username })} />
+              {submitted && !doctor.username && <small className='p-error'>Username es requerido.</small>}
+            </div>
+            <div className='tipodoc field'>
+              <label htmlFor='cod_tipo_doc'>Tipo Documento</label>
+              <Dropdown optionLabel='label' optionValue='value' value={doctor.cod_tipo_doc} options={tipoDocumentos} onChange={(e) => onInputChange(e, 'cod_tipo_doc')} placeholder='Selecciona un documento'/>
+            </div>
+            <div className='especialidad field'>
+              <label htmlFor='cod_especialidad'>Especialidad</label>
+              <Dropdown optionLabel='label' optionValue='value' value={doctor.cod_especialidad} options={especilidades} onChange={(e) => onInputChange(e, 'cod_especialidad')} placeholder='Selecciona una especialidad'/>
+            </div>
+            <div className='tatencion field'>
+              <label htmlFor='cod_tipo_atencion'>Tipo Atencion</label>
+              <Dropdown optionLabel='label' optionValue='value' value={doctor.cod_tipo_atencion} options={especilidades} onChange={(e) => onInputChange(e, 'cod_tipo_atencion')} placeholder='Selecciona una atencion'/>
             </div>
           </div>
           <Divider align="left">
             <div className="inline-flex align-items-center">
-                <b>Disponibilidad</b>
+              <b>Disponibilidad</b>
             </div>
           </Divider>
           <div className='group-form-availability-doctor'>
-            <div className='nauto field'>
-              <label htmlFor='numero_autorizacion'>N° Autorizacion</label>
-              <InputText id='numero_autorizacion' value={payment.numero_autorizacion || ''} onChange={(e) => onInputChange(e, 'numero_autorizacion')} required autoFocus className={classNames({ 'p-invalid': false })} disabled={disablePatient}/>
+            <div className='fecdispo field'>
+              <label htmlFor='cod_vent_horaria'>Rango de fechas</label>
+              {
+                mode === 'CREATE'
+                ? (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={selectedDates} onChange={(e) => onDateChange(e, 'range_dates')} selectionMode="range" readOnlyInput showIcon />)
+                : (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={date} onChange={(e) => onDateChange(e, 'range_dates')} showIcon />)
+              }
             </div>
-            <div className='fecauto field'>
-              <label htmlFor='fecha_autorizacion'>Fecha Autorizacion</label>
-              <Calendar dateFormat='dd/mm/yy' id='fecha_autorizacion' value={payment.fecha_autorizacion} onChange={(e) => onInputChange(e, 'fecha_autorizacion')} showIcon />
-            </div>
-            <div className='fecprog field'>
-              <label htmlFor='deducible'>Deducible</label>
-              <InputText id='deducible' value={payment.deducible || ''} onChange={(e) => onInputChange(e, 'deducible')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.deducible })} disabled={disablePatient} />
-            </div>
-            <div className='horaprog field'>
-              <label htmlFor='copago'>Copago</label>
-              <InputText id='copago' value={payment.copago || ''} onChange={(e) => onInputChange(e, 'copago')} required autoFocus className={classNames({ 'p-invalid': false })} disabled={disablePatient} />
-            </div>
-            <div className='link field'>
-              <label htmlFor='link_pago'>Link de pago</label>
-              <InputText id='link_pago' value={payment.link_pago || ''} onChange={(e) => onInputChange(e, 'link_pago')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.link_pago })} disabled={disablePatient} />
-            </div>
-            <div className='btnsend field'>
-              <label htmlFor='link_pago' className='send-link'>Link de pago</label>
-              <Button label='Enviar link' icon='pi pi-envelope' onClick={sendPaymentLink} disabled={disablePatient} />
-            </div>
-            <div className='diagnostico field'>
-              <label htmlFor='observaciones'>Observaciones</label>
-              <InputTextarea id='observaciones' value={payment.observaciones || ''} onChange={(e) => onInputChange(e, 'observaciones')} required rows={3} cols={20}  disabled={disablePatient} />
+            <div className='venhor field'>
+              <label htmlFor='cod_vent_horaria'>Horario</label>
+              <MultiSelect optionLabel='label' optionValue='value' value={selectedHorarios} options={ventanaHoraria} onChange={(e) => onMultiChange(e, 'range_time')} placeholder='Selecciona un horario' maxSelectedLabels={3}/>
             </div>
           </div>
       </div>
