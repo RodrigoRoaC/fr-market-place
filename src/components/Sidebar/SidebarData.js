@@ -24,6 +24,12 @@ export const SidebarData = [
     acl: [1, 4]
   },
   {
+    title: 'Disponibilidad',
+    path: '/doctor-availability',
+    cName: 'nav-text',
+    acl: [1, 5]
+  },
+  {
     title: 'Citas',
     path: '/medical-appointment',
     cName: 'nav-text',

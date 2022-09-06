@@ -9,7 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import './DoctorTable.css';
 import { Dialog } from 'primereact/dialog';
 
-import { parseDoctors } from '../../../utils/parser';
+import { dateToISOString, parseDoctors } from '../../../utils/parser';
 import { DoctorService } from '../../../services/Doctor/DoctorService';
 
 const DoctorTable = ({
@@ -22,14 +22,21 @@ const DoctorTable = ({
   setDoctors,
   setMode,
   setSubmitted,
+  setSelectedHorarios,
 }) => {
   const [selectedDoctors, setSelectedDoctors] = useState(null);
   const [deleteDoctorDialog, setDeleteDoctorDialog] = useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
   const dt = useRef(null);
 
-  const editDoctor = (doctor) => {
-    setDoctor({...doctor});
+  const editDoctor = async (doctor) => {
+    const doctorService = new DoctorService();
+    const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(), cod_doctor: doctor.cod_doctor });
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+    }
+    setSelectedHorarios((data || []).map(d => d.value));
+    setDoctor({...doctor, fecha_reserva: new Date(), range_time: (data || []).map(d => d.value)});
     setMode('UPDATE');
     setDoctorDialog(true);
   }

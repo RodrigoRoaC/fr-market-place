@@ -37,7 +37,7 @@ export class AppointmentService {
   async getAppointmentsBy(cod_usuario) {
     try {
       const response = await client.get(`/appointment/${cod_usuario}`);
-  
+
       return { data: response.data };
     } catch (err) {
       console.error(err);
@@ -48,7 +48,7 @@ export class AppointmentService {
   async getComboData() {
     try {
       const response = await client.get(`/appointment/combo/get-data`);
-  
+
       return { data: response.data };
     } catch (err) {
       console.error(err);
@@ -59,7 +59,7 @@ export class AppointmentService {
   async delete({ cod_solicitud }) {
     try {
       const response = await client.post(`/appointment/remove`, { cod_solicitud });
-  
+
       return { data: response.data };
     } catch (err) {
       console.error(err);

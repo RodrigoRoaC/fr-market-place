@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react'
-import DoctorForm from '../../components/Doctor/DoctorForm/DoctorForm';
-import DoctorTable from '../../components/Doctor/DoctorTable/DoctorTable'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import SingleDoctor from '../../components/Doctor/DoctorForm/SingleDoctor';
+import { UserContext } from '../../context/UserContext';
 import emptyDoctor from '../../data/doctor';
 import { AppointmentService } from '../../services/AppointmentService';
 import { DoctorService } from '../../services/Doctor/DoctorService';
+import { dateToISOString } from '../../utils/parser';
 
-const Doctor = () => {
+const SingleDoctorPage = () => {
+  const { user } = useContext(UserContext);
   const toast = useRef(null);
-  const [mode, setMode] = useState('CREATE');
-  const [submitted, setSubmitted] = useState(false);
-  const [doctorDialog, setDoctorDialog] = useState(false);
   const [doctor, setDoctor] = useState({ ...emptyDoctor });  
 
-  const [doctors, setDoctors] = useState(null);
   const [especilidades, setEspecilidades] = useState(null);
   const [ventanaHoraria, setVentanaHoraria] = useState(null);
   const [tipoDocumentos, setTipoDocumentos] = useState(null);
@@ -23,8 +21,12 @@ const Doctor = () => {
   const appointmentService = new AppointmentService();
 
   useEffect(() => {
-    doctorService.getAllDoctors()
-      .then(res => setDoctors(res.data))
+    doctorService.getDoctor(user.cod_usuario)
+      .then(res => {
+        setDoctor(res.data)
+        doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(), cod_doctor: res.data.cod_doctor })
+        .then(({ data }) => setSelectedHorarios((data || []).map(d => d.value)))
+      })
       .catch(err => {
         console.error(err);
       });
@@ -39,39 +41,20 @@ const Doctor = () => {
         console.error(err);
       });
     appointmentService.getComboData()
-      .then(({ data }) => {
-        setTipoDocumentos(data.tipoDocumento);
+      .then(({ data }) => setTipoDocumentos(data.tipoDocumento))
+      .catch(err => {
+        console.error(err);
       });
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className='wrapper'>
-      <DoctorTable
+      <SingleDoctor
         toast = {toast}
-        emptyDoctor = {emptyDoctor}
-        setDoctorDialog = {setDoctorDialog}
-        setDoctor = {setDoctor}
-        doctor = {doctor}
-        doctors = {doctors}
-        setDoctors = {setDoctors}
-        setMode = {setMode}
-        setSubmitted = {setSubmitted}
-        setSelectedHorarios = {setSelectedHorarios}
-      />
-      <DoctorForm
-        toast = {toast}
-        emptyDoctor = {emptyDoctor}
-        doctorDialog = {doctorDialog}
-        setDoctorDialog = {setDoctorDialog}
 
         doctor = {doctor}
         setDoctor = {setDoctor}
-        doctors = {doctors}
-        setDoctors = {setDoctors}
 
-        submitted = {submitted}
-        setSubmitted = {setSubmitted}
-        mode = {mode}
         especilidades = {especilidades}
         ventanaHoraria = {ventanaHoraria}
         tipoDocumentos = {tipoDocumentos}
@@ -82,4 +65,4 @@ const Doctor = () => {
   )
 }
 
-export default Doctor;
+export default SingleDoctorPage;

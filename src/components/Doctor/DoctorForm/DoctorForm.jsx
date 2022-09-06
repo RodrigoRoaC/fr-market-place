@@ -11,7 +11,7 @@ import { Divider } from 'primereact/divider';
 
 import { Dropdown } from 'primereact/dropdown';
 import { DoctorService } from '../../../services/Doctor/DoctorService';
-import { parseDoctors } from '../../../utils/parser';
+import { dateToISOString, parseDoctors } from '../../../utils/parser';
 import { UserContext } from '../../../context/UserContext';
 
 function DoctorForm({ 
@@ -31,18 +31,19 @@ function DoctorForm({
   especilidades = [],
   ventanaHoraria = [],
   tipoDocumentos = [],
+  selectedHorarios,
+  setSelectedHorarios,
 }) {
   const { user } = useContext(UserContext);
 
-  const [selectedHorarios, setSelectedHorarios] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(new Date());
 
   const hideDialog = () => {
     setSubmitted(false);
     setSelectedHorarios([]);
     setSelectedDates([]);
-    setDate(null);
+    setDate(new Date());
     setDoctor(emptyDoctor);
     setDoctorDialog(false);
   }
@@ -74,8 +75,7 @@ function DoctorForm({
 
     if (mode !== 'CREATE') {
       const index = findIndexById(doctor.cod_pago);
-      const getEstado = doctor.cod_estado === 1 ? 2 : doctor.cod_estado;
-      const updateRes = await doctorService.update({ ...doctor, cod_usuario: user.cod_usuario, cod_estado: getEstado });
+      const updateRes = await doctorService.update({ ...doctor, cod_resp: user.cod_usuario });
       if (updateRes.error) {
         toast.current.show({ severity: 'error', summary: 'Doctor Edit error', detail: 'Edit failed', life: 3000 });
         return;
@@ -108,12 +108,19 @@ function DoctorForm({
     setSelectedHorarios(values);
   }
 
-  const onDateChange = (e, name) => {
+  const onDateChange = async (e, name) => {
     const values = e.value;
     let _doctor = { ...doctor };
     _doctor[`${name}`] = values;
 
     setDoctor(_doctor);
+
+    const doctorService = new DoctorService();
+    const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(), cod_doctor: doctor.cod_doctor });
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+    }
+    setSelectedHorarios((data || []).map(d => d.value));
 
     if (mode === 'CREATE') {
       setSelectedDates(values);
@@ -131,7 +138,7 @@ function DoctorForm({
   );
 
   return (
-    <Dialog visible={doctorDialog} style={{ width: '650px'}} header='Registrar doctor' modal className='p-fluid' footer={doctorDialogFooter} onHide={hideDialog}>
+    <Dialog visible={doctorDialog} style={{ width: '650px'}} header={mode === 'CREATE' ? 'Registrar doctor' : 'Editar doctor'} modal className='p-fluid' footer={doctorDialogFooter} onHide={hideDialog}>
       <div className='div-form-table'>
           <Divider align="left">
             <div className="inline-flex align-items-center">
@@ -184,11 +191,11 @@ function DoctorForm({
           </Divider>
           <div className='group-form-availability-doctor'>
             <div className='fecdispo field'>
-              <label htmlFor='cod_vent_horaria'>Rango de fechas</label>
+              <label htmlFor='cod_vent_horaria'>{mode === 'CREATE' ? 'Rango de fechas' : 'Fecha'}</label>
               {
                 mode === 'CREATE'
                 ? (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={selectedDates} onChange={(e) => onDateChange(e, 'range_dates')} selectionMode="range" readOnlyInput showIcon />)
-                : (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={date} onChange={(e) => onDateChange(e, 'range_dates')} showIcon />)
+                : (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={date} onChange={(e) => onDateChange(e, 'fecha_reserva')} showIcon />)
               }
             </div>
             <div className='venhor field'>

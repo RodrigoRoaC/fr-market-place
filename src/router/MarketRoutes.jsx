@@ -6,6 +6,7 @@ import HomePage from '../pages/Home/Home';
 import AppointmentPage from '../pages/Appointment/Appointment';
 import PaymentPage from '../pages/Payment/Payment';
 import DoctorPage from '../pages/Doctor/Doctor';
+import SingleDoctorPage from '../pages/Doctor/SingleDoctor';
 
 function MarketRoutes() {
   return (
@@ -17,6 +18,7 @@ function MarketRoutes() {
         <Route path='/profile' element={<AppointmentPage />} />
         <Route path='/request-appointment' element={<AppointmentPage />} />
         <Route path='/medical-appointment' element={<AppointmentPage />} />
+        <Route path='/doctor-availability' element={<SingleDoctorPage />} />
         <Route path='/medical-availability' element={<DoctorPage />} />
 
         <Route path='/*' element={<Navigate to='/' />}/>

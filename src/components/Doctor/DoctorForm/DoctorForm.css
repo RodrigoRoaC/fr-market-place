@@ -56,3 +56,14 @@
 .fecdispo { grid-area: fecdispo; }
 
 .venhor { grid-area: venhor; }
+
+.group-form-availability-doctor-single {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "fecdispo fecdispo fecdispo"
+    "venhor venhor venhor"
+}
