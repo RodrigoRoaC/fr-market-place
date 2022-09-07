@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import DoctorForm from '../../components/Doctor/DoctorForm/DoctorForm';
 import DoctorTable from '../../components/Doctor/DoctorTable/DoctorTable'
 import emptyDoctor from '../../data/doctor';
-import { AppointmentService } from '../../services/AppointmentService';
+import { RequestAppointmentService } from '../../services/RequestAppointmentService';
 import { DoctorService } from '../../services/Doctor/DoctorService';
 
 const Doctor = () => {
@@ -20,7 +20,7 @@ const Doctor = () => {
   const [selectedHorarios, setSelectedHorarios] = useState([]);
 
   const doctorService = new DoctorService();
-  const appointmentService = new AppointmentService();
+  const reqAppointmentService = new RequestAppointmentService();
 
   useEffect(() => {
     doctorService.getAllDoctors()
@@ -38,7 +38,7 @@ const Doctor = () => {
       .catch(err => {
         console.error(err);
       });
-    appointmentService.getComboData()
+    reqAppointmentService.getComboData()
       .then(({ data }) => {
         setTipoDocumentos(data.tipoDocumento);
       });

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { AppointmentService } from '../../services/AppointmentService';
+import { RequestAppointmentService } from '../../services/RequestAppointmentService';
 
 function Home() {
   const [, setResponse] = useState(null);
 
   useEffect(() => {
     async function healtCheck() {
-      const as = new AppointmentService();
+      const as = new RequestAppointmentService();
       setResponse(await as.healthCheck());
     }
 

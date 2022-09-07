@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import SingleDoctor from '../../components/Doctor/DoctorForm/SingleDoctor';
 import { UserContext } from '../../context/UserContext';
 import emptyDoctor from '../../data/doctor';
-import { AppointmentService } from '../../services/AppointmentService';
+import { RequestAppointmentService } from '../../services/RequestAppointmentService';
 import { DoctorService } from '../../services/Doctor/DoctorService';
 import { dateToISOString } from '../../utils/parser';
 
@@ -18,7 +18,7 @@ const SingleDoctorPage = () => {
   const [selectedHorarios, setSelectedHorarios] = useState([]);
 
   const doctorService = new DoctorService();
-  const appointmentService = new AppointmentService();
+  const reqAppointmentService = new RequestAppointmentService();
 
   useEffect(() => {
     doctorService.getDoctor(user.cod_usuario)
@@ -40,7 +40,7 @@ const SingleDoctorPage = () => {
       .catch(err => {
         console.error(err);
       });
-    appointmentService.getComboData()
+    reqAppointmentService.getComboData()
       .then(({ data }) => setTipoDocumentos(data.tipoDocumento))
       .catch(err => {
         console.error(err);

@@ -11,7 +11,7 @@ import { Divider } from 'primereact/divider';
 import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 
 import './RequestForm.css';
-import { AppointmentService } from '../../../services/AppointmentService';
+import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 import { UserContext } from '../../../context/UserContext';
 import { parseAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
@@ -219,7 +219,7 @@ function RequestForm({
   }
 
   const saveAppointment = async () => {
-    const appointmentService = new AppointmentService();
+    const reqAppointmentService = new RequestAppointmentService();
     setSubmitted(true);
     let _appointments = [...appointments];
     if (validateAppointmentValues(appointment)) {
@@ -229,7 +229,7 @@ function RequestForm({
     
     if (appointment.cod_solicitud) {
       const index = findIndexById(appointment.cod_solicitud);
-      const updateRes = await appointmentService.update({ ...appointment, cod_usuario: user.cod_usuario });
+      const updateRes = await reqAppointmentService.update({ ...appointment, cod_usuario: user.cod_usuario });
       if (updateRes.error) {
         toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
         return;
@@ -242,7 +242,7 @@ function RequestForm({
       generatePayment(updateRes.data.cod_solicitud)();
       return;
     }
-    const registerRes = await appointmentService.register({ ...appointment, cod_usuario: user.cod_usuario });
+    const registerRes = await reqAppointmentService.register({ ...appointment, cod_usuario: user.cod_usuario });
     if (registerRes.error) {
       toast.current.show({ severity: 'error', summary: 'Appoinment Register error', detail: 'Register failed', life: 3000 });
       return;

@@ -1,7 +1,7 @@
 import { data } from "../data/products";
 import client from "../utils/axios";
 
-export class AppointmentService {
+export class RequestAppointmentService {
   getAppointments() {
     return data;
   }
@@ -14,7 +14,7 @@ export class AppointmentService {
 
   async register(appointment) {
     try {
-      const response = await client.post('/appointment/register', appointment);
+      const response = await client.post('/request-appointment/register', appointment);
 
       return { data: response.data };
     } catch (err) {
@@ -25,7 +25,7 @@ export class AppointmentService {
 
   async update(appointment) {
     try {
-      const response = await client.put('/appointment/update', appointment);
+      const response = await client.put('/request-appointment/update', appointment);
 
       return { data: response.data };
     } catch (err) {
@@ -36,7 +36,7 @@ export class AppointmentService {
 
   async getAppointmentsBy(cod_usuario) {
     try {
-      const response = await client.get(`/appointment/${cod_usuario}`);
+      const response = await client.get(`/request-appointment/${cod_usuario}`);
 
       return { data: response.data };
     } catch (err) {
@@ -47,7 +47,7 @@ export class AppointmentService {
 
   async getComboData() {
     try {
-      const response = await client.get(`/appointment/combo/get-data`);
+      const response = await client.get(`/request-appointment/combo/get-data`);
 
       return { data: response.data };
     } catch (err) {
@@ -58,7 +58,7 @@ export class AppointmentService {
 
   async delete({ cod_solicitud }) {
     try {
-      const response = await client.post(`/appointment/remove`, { cod_solicitud });
+      const response = await client.post(`/request-appointment/remove`, { cod_solicitud });
 
       return { data: response.data };
     } catch (err) {
@@ -69,7 +69,7 @@ export class AppointmentService {
 
   async asignToOperator(cod_usuario, cod_solicitud) {
     try {
-      const response = await client.post('/appointment/assign-operator', { cod_usuario, cod_solicitud });
+      const response = await client.post('/request-appointment/assign-operator', { cod_usuario, cod_solicitud });
 
       return { data: response.data };
     } catch (error) {

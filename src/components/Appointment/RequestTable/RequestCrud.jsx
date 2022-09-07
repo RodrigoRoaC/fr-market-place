@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { AppointmentService } from '../../../services/AppointmentService';
+import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
@@ -37,18 +37,18 @@ const RequestCrud = () => {
   const [tipoModalidad, setTipoModalidad] = useState(null);
   const [tipoServicio, setTServicio] = useState(null);
 
-  const appointmentService = new AppointmentService();
+  const reqAppointmentService = new RequestAppointmentService();
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    appointmentService.getAppointmentsBy(user.cod_usuario)
+    reqAppointmentService.getAppointmentsBy(user.cod_usuario)
       .then(res => setAppointments(parseAppointments(res.data)))
       .catch(err => {
         console.error(err);
         setAppointments([]);
       });
 
-    appointmentService.getComboData()
+    reqAppointmentService.getComboData()
       .then(({ data }) => {
         setTipoDocumento(data.tipoDocumento);
         setDepartamento(data.departamento);
@@ -95,7 +95,7 @@ const RequestCrud = () => {
 
   const deleteappointment = async () => {
     let _appointments = appointments.filter(val => val.cod_solicitud !== appointment.cod_solicitud);
-    const { error } = await appointmentService.delete({ cod_solicitud: appointment.cod_solicitud });
+    const { error } = await reqAppointmentService.delete({ cod_solicitud: appointment.cod_solicitud });
     if (error) {
       toast.current.show({ severity: 'error', summary: 'Error deleting appoinment', detail: 'Deleted failed', life: 3000 });
       return;

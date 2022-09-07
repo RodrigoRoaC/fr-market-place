@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { Dropdown } from 'primereact/dropdown';
 import React, { useState } from 'react';
-import { AppointmentService } from '../../../services/AppointmentService';
+import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 
 const AssignForm = ({
   appointments,
@@ -16,8 +16,8 @@ const AssignForm = ({
   const [selectedOperator, setSelectedOperator] = useState(null);
 
   const assignAppointment = async () => {
-    const appointmentService = new AppointmentService();
-    const registerRes = await appointmentService.asignToOperator(
+    const reqAppointmentService = new RequestAppointmentService();
+    const registerRes = await reqAppointmentService.asignToOperator(
       selectedOperator,
       codSolicitud
     );
