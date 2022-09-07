@@ -11,7 +11,7 @@ import { InputText } from 'primereact/inputtext';
 import './RequestTable.css';
 import { UserContext } from '../../../context/UserContext';
 import { UserService } from '../../../services/User/UserService';
-import emptyAppointment from '../../../data/appointment';
+import emptyReqAppointment from '../../../data/request.appointment';
 import AssignForm from '../AssignForm/AssignForm';
 
 const RequestTable = () => {
@@ -19,7 +19,7 @@ const RequestTable = () => {
   const [appointments, setAppointments] = useState(null);
   const [assignDialog, setAssignDialog] = useState(false);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
-  const [appointment, setAppointment] = useState({...emptyAppointment});
+  const [appointment, setAppointment] = useState({...emptyReqAppointment});
   const [selectedAppointments, setSelectedAppointments] = useState(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
@@ -63,7 +63,7 @@ const RequestTable = () => {
     }
     setAppointments(_appointments);
     setDeleteAppointmentDialog(false);
-    setAppointment(emptyAppointment);
+    setAppointment(emptyReqAppointment);
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'appointment Deleted', life: 3000 });
   }
 

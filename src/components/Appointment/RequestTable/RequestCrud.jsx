@@ -9,9 +9,9 @@ import { InputText } from 'primereact/inputtext';
 
 import './RequestCrud.css';
 import { UserContext } from '../../../context/UserContext';
-import { parseAppointments } from '../../../utils/parser';
+import { parseReqAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
-import emptyAppointment from '../../../data/appointment';
+import emptyReqAppointment from '../../../data/request.appointment';
 import RequestForm from '../RequestForm/RequestForm';
 
 const RequestCrud = () => {
@@ -19,7 +19,7 @@ const RequestCrud = () => {
   const [appointmentDialog, setAppointmentDialog] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
-  const [appointment, setAppointment] = useState({...emptyAppointment});
+  const [appointment, setAppointment] = useState({...emptyReqAppointment});
   const [selectedAppointments, setSelectedAppointments] = useState(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const toast = useRef(null);
@@ -42,7 +42,7 @@ const RequestCrud = () => {
 
   useEffect(() => {
     reqAppointmentService.getAppointmentsBy(user.cod_usuario)
-      .then(res => setAppointments(parseAppointments(res.data)))
+      .then(res => setAppointments(parseReqAppointments(res.data)))
       .catch(err => {
         console.error(err);
         setAppointments([]);
@@ -61,7 +61,7 @@ const RequestCrud = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openNew = () => {
-    setAppointment(emptyAppointment);
+    setAppointment(emptyReqAppointment);
     setSubmitted(false);
     setAppointmentDialog(true);
   }
@@ -102,7 +102,7 @@ const RequestCrud = () => {
     }
     setAppointments(_appointments);
     setDeleteAppointmentDialog(false);
-    setAppointment(emptyAppointment);
+    setAppointment(emptyReqAppointment);
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'appointment Deleted', life: 3000 });
   }
 
@@ -168,7 +168,7 @@ const RequestCrud = () => {
         setAppointment = {setAppointment}
         appointments = {appointments}
         setAppointments = {setAppointments}
-        emptyAppointment = {emptyAppointment}
+        emptyReqAppointment = {emptyReqAppointment}
         toast = {toast}
         tipoDocumento = {tipoDocumento}
         departamento = {departamento}

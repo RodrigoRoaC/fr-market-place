@@ -1,4 +1,4 @@
-export const parseAppointments = (appointments = []) => appointments.map((app) => ({
+export const parseReqAppointments = (appointments = []) => appointments.map((app) => ({
   ...app,
   fec_nacimiento: app.fec_nacimiento ? new Date(app.fec_nacimiento) : null,
   fecha_programacion: app.fecha_programacion ? new Date(app.fecha_programacion) : null,
@@ -17,6 +17,13 @@ export const parsePayments = (payments = []) => payments.map((pay) => ({
 export const parseDoctors = (doctors = []) => doctors.map((doc) => ({
   ...doc,
   fecha_reserva: doc.fecha_reserva ? new Date(doc.fecha_reserva) : null,
+}));
+
+export const parseAppointments = (appointments = []) => appointments.map((app) => ({
+  ...app,
+  fecha_reserva: app.fecha_reserva ? new Date(app.fecha_reserva) : null,
+  fecha_programacion: app.fecha_programacion ? new Date(app.fecha_programacion) : null,
+  f_programacion: app.fecha_programacion ? new Date(app.fecha_programacion).toLocaleDateString() : null,
 }));
 
 const parseTime = (time) => {

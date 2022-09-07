@@ -1,37 +1,27 @@
 let emptyAppointment = {
-  cod_solicitud: '',
-  cod_usuario: '',
-  cod_estado: '',
-
-  descripcion: '',
-
-  cod_tipo_atencion: '',
-  cod_tipo_servicio: '',
-  cod_modalidad: '',
-  cod_plan: '',
-  cod_iafa: '',
-
-  fecha_programacion: '',
-  fecha_autorizacion: '',
-  hora_programacion: '',
-  numero_autorizacion: '',
+  cod_cita: '',
   sintomas: '',
   diagnostico: '',
-
+  fecha_programacion: '',
+  observaciones: '',
+  cod_estado: '',
+  
+  cod_doctor: '',
+  nombres_doctor: '',
+  especialidad: '',
+  tipo_atencion: '',
+  
   cod_paciente: '',
-  nombres: '',
-  apellido: '',
-
-  edad: '',
-
-  cod_tipo_doc: '',
-  num_documento: '',
-  departamento: '',
-  provincia: '',
-  distrito: '',
-  direccion: '',
-  email: '',
+  nombres_paciente: '',
   telefono1: '',
+  email: '',
+  tipo_documento: '',
+  num_documento: '',
+  
+  cod_disponibilidad: '',
+  flag_disponible: '',
+  horario: '',
+  fecha_reserva: '',
 };
 
 export default emptyAppointment;

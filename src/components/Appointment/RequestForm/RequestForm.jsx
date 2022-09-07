@@ -13,7 +13,7 @@ import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 import './RequestForm.css';
 import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 import { UserContext } from '../../../context/UserContext';
-import { parseAppointments } from '../../../utils/parser';
+import { parseReqAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
 import { validateAppointmentValues } from '../../../utils/validations';
 import { PaymentService } from '../../../services/Payment/PaymentService';
@@ -27,7 +27,7 @@ function RequestForm({
   setAppointment, 
   appointments = [],
   setAppointments, 
-  emptyAppointment, 
+  emptyReqAppointment, 
   toast, 
   tipoDocumento = [],
   departamento = [],
@@ -74,7 +74,7 @@ function RequestForm({
     setSelectedProv(null);
     setSelectedDis(null);
     setSubmitted(false);
-    setAppointment(emptyAppointment);
+    setAppointment(emptyReqAppointment);
     setAppointmentDialog(false);
   }
 
@@ -234,11 +234,11 @@ function RequestForm({
         toast.current.show({ severity: 'error', summary: 'Appoinment Edit error', detail: 'Edit failed', life: 3000 });
         return;
       }
-      _appointments[index] = { ...(parseAppointments([updateRes.data])[0]) };
+      _appointments[index] = { ...(parseReqAppointments([updateRes.data])[0]) };
       toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Updated', life: 3000 });
 
       setAppointments(_appointments);
-      setAppointment({ ...(parseAppointments([updateRes.data])[0]) });
+      setAppointment({ ...(parseReqAppointments([updateRes.data])[0]) });
       generatePayment(updateRes.data.cod_solicitud)();
       return;
     }
@@ -248,8 +248,8 @@ function RequestForm({
       return;
     }
 
-    setAppointments([...parseAppointments([registerRes.data]), ..._appointments]);
-    setAppointment({ ...(parseAppointments([registerRes.data]))[0] });
+    setAppointments([...parseReqAppointments([registerRes.data]), ..._appointments]);
+    setAppointment({ ...(parseReqAppointments([registerRes.data]))[0] });
     toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Appointment Created', life: 3000 });
     generatePayment(registerRes.data.cod_solicitud)();
   }
