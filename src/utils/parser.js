@@ -34,8 +34,8 @@ const parseTime = (time) => {
   return new Date(`${fec}T${timeGMT}Z`);
 }
 
-export const dateToISOString = () => {
-  const [day, month, year] = new Date().toLocaleDateString().split('/');
+export const dateToISOString = (date) => {
+  const [day, month, year] = (date ? new Date(date) : new Date()).toLocaleDateString().split('/');
 
   return `${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`;
 };

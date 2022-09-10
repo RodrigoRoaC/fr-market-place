@@ -9,10 +9,10 @@ import { InputText } from 'primereact/inputtext';
 import './AppointmentTable.css';
 import { Dialog } from 'primereact/dialog';
 
-
 import emptyAppointment from '../../../data/appointment';
 import { AppointmentService } from '../../../services/Appointment/AppointmentService';
-import { parseAppointments } from '../../../utils/parser';
+import { dateToISOString, parseAppointments } from '../../../utils/parser';
+import { DoctorService } from '../../../services/Doctor/DoctorService';
 
 const AppointmentTable = ({
   toast,
@@ -22,13 +22,33 @@ const AppointmentTable = ({
   appointments,
   setAppointments,
   userPerfil,
+
+  setDoctores,
+  setDisponibilidad,
 }) => {
   const [selectedAppointments, setSelectedAppointments] = useState(null);
   const [deleteAppointmentDialog, setDeleteAppointmentDialog] = useState(false);
   const [globalFilter, setGlobalFilter] = useState('');
   const dt = useRef(null);
+  const doctorService = new DoctorService();
 
-  const editAppointment = (appointment) => {
+  const editAppointment = async (appointment) => {
+    const { cod_especialidad, cod_tipo_atencion, fecha_reserva, cod_doctor } = appointment;
+    if (cod_especialidad && cod_tipo_atencion) {
+      const { error, data } = await doctorService.getComboDoctor(cod_especialidad, cod_tipo_atencion);
+      if (!error) {
+        setDoctores(data);
+      }
+    }
+
+    if (fecha_reserva && cod_doctor) {
+      const { error: err, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(fecha_reserva), cod_doctor });
+      if (err) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+      setDisponibilidad([{ label: appointment.horario, value: appointment.cod_vent_horaria }, ...data]);
+    }
+
     setAppointment({...appointment});
     setAppointmentDialog(true);
   }

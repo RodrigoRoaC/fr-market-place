@@ -31,6 +31,7 @@ function DoctorForm({
   especilidades = [],
   ventanaHoraria = [],
   tipoDocumentos = [],
+  tipoAtencion = [],
   selectedHorarios,
   setSelectedHorarios,
 }) {
@@ -83,6 +84,7 @@ function DoctorForm({
       _doctors[index] = { ...(parseDoctors([updateRes.data])[0]) };
       setDoctors(_doctors);
       setDoctor({ ...(parseDoctors([updateRes.data])[0]) });
+      setDoctorDialog(false);
 
       toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Doctor Updated', life: 3000 });
       return;
@@ -116,7 +118,9 @@ function DoctorForm({
     setDoctor(_doctor);
 
     const doctorService = new DoctorService();
-    const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(), cod_doctor: doctor.cod_doctor });
+    const { error, data } = await doctorService.getVentanaHorariaByDate(
+      { fecha_reserva: dateToISOString(_doctor.fecha_reserva || null), cod_doctor: doctor.cod_doctor }
+    );
     if (error) {
       toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
     }
@@ -181,7 +185,7 @@ function DoctorForm({
             </div>
             <div className='tatencion field'>
               <label htmlFor='cod_tipo_atencion'>Tipo Atencion</label>
-              <Dropdown optionLabel='label' optionValue='value' value={doctor.cod_tipo_atencion} options={especilidades} onChange={(e) => onInputChange(e, 'cod_tipo_atencion')} placeholder='Selecciona una atencion'/>
+              <Dropdown optionLabel='label' optionValue='value' value={doctor.cod_tipo_atencion} options={tipoAtencion} onChange={(e) => onInputChange(e, 'cod_tipo_atencion')} placeholder='Selecciona una atencion'/>
             </div>
           </div>
           <Divider align="left">
@@ -194,8 +198,8 @@ function DoctorForm({
               <label htmlFor='cod_vent_horaria'>{mode === 'CREATE' ? 'Rango de fechas' : 'Fecha'}</label>
               {
                 mode === 'CREATE'
-                ? (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={selectedDates} onChange={(e) => onDateChange(e, 'range_dates')} selectionMode="range" readOnlyInput showIcon />)
-                : (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={date} onChange={(e) => onDateChange(e, 'fecha_reserva')} showIcon />)
+                ? (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={selectedDates} onChange={(e) => onDateChange(e, 'range_dates')} selectionMode="range" readOnlyInput showIcon disabledDays={[0]} />)
+                : (<Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={date} onChange={(e) => onDateChange(e, 'fecha_reserva')} showIcon disabledDays={[0]} />)
               }
             </div>
             <div className='venhor field'>

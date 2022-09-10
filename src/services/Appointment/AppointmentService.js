@@ -3,8 +3,8 @@ import client from "../../utils/axios";
 export class AppointmentService {
   async register(appointment) {
     try {
+      console.log(appointment);
       const response = await client.post('/appointment', appointment);
-
       return { data: response.data };
     } catch (err) {
       console.error(err);
@@ -14,8 +14,8 @@ export class AppointmentService {
 
   async update(appointment) {
     try {
+      console.log(appointment);
       const response = await client.put('/appointment', appointment);
-
       return { data: response.data };
     } catch (err) {
       console.error(err);

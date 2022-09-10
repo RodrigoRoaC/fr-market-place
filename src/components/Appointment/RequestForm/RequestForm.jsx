@@ -15,7 +15,7 @@ import { RequestAppointmentService } from '../../../services/RequestAppointmentS
 import { UserContext } from '../../../context/UserContext';
 import { parseReqAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
-import { validateAppointmentValues } from '../../../utils/validations';
+import { validateReqAppointmentValues } from '../../../utils/validations';
 import { PaymentService } from '../../../services/Payment/PaymentService';
 
 function RequestForm({ 
@@ -222,7 +222,7 @@ function RequestForm({
     const reqAppointmentService = new RequestAppointmentService();
     setSubmitted(true);
     let _appointments = [...appointments];
-    if (validateAppointmentValues(appointment)) {
+    if (validateReqAppointmentValues(appointment)) {
       toast.current.show({ severity: 'error', summary: 'Appoinment Error', detail: 'Complete fields', life: 3000 });
       return;
     }

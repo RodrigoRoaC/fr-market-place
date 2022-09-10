@@ -1,0 +1,76 @@
+
+/**
+  Form
+*/
+
+.p-dialog-header { 
+  border-bottom: 1px solid var(--gray-500) !important;
+}
+
+.p-dialog-footer { 
+  border-top: 1px solid var(--gray-300) !important;
+  padding: 1rem !important;
+}
+
+.group-form-paciente-appointment {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 0.5fr 0.5fr 0.5fr 0.5fr 0.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nombre nombre nombre telefono1"
+    "email email email ."
+    "tdoc ndoc ndoc ndoc"
+    "sintomas sintomas sintomas sintomas"
+    "diagnostico diagnostico diagnostico diagnostico";
+}
+
+.nombre { grid-area: nombre; }
+
+.telefono1 { grid-area: telefono1; }
+
+.email { grid-area: email; }
+
+.ndoc { grid-area: ndoc; }
+
+.tdoc { grid-area: tdoc; }
+
+.sintomas { grid-area: sintomas; }
+
+.diagnostico { grid-area: diagnostico; }
+
+.group-form-doctor-appointment {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "tespecialidad tespecialidad tatencion doctor doctor"
+    "fecreserva fecreserva fecreserva horario horario";
+}
+
+.tespecialidad { grid-area: tespecialidad; }
+
+.tatencion { grid-area: tatencion; }
+
+.doctor { grid-area: doctor; }
+
+.fecreserva { grid-area: fecreserva; }
+
+.horario { grid-area: horario; }
+
+.group-form-appointment {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "observaciones observaciones observaciones"
+    "observaciones observaciones observaciones"
+    "observaciones observaciones observaciones";
+}
+
+.observaciones { grid-area: observaciones; }

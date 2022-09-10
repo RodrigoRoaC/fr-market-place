@@ -8,7 +8,9 @@ let emptyAppointment = {
   
   cod_doctor: '',
   nombres_doctor: '',
+  cod_especialidad: '',
   especialidad: '',
+  cod_tipo_atencion: '',
   tipo_atencion: '',
   
   cod_paciente: '',
@@ -18,7 +20,7 @@ let emptyAppointment = {
   tipo_documento: '',
   num_documento: '',
   
-  cod_disponibilidad: '',
+  cod_vent_horaria: '',
   flag_disponible: '',
   horario: '',
   fecha_reserva: '',

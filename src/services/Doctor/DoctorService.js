@@ -11,10 +11,21 @@ export class DoctorService {
       return { error: err }
     }
   }
-  
+
   async getDoctor(cod_doctor) {
     try {
       const response = await client.get(`/doctor/${cod_doctor}`);
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
+
+  async getComboDoctor(especialidad, atencion) {
+    try {
+      const response = await client.get(`/doctor/combo?cod_especialidad=${especialidad}&cod_tipo_atencion=${atencion}`);
 
       return { data: response.data };
     } catch (err) {

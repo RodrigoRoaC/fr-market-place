@@ -16,6 +16,7 @@ const Doctor = () => {
   const [especilidades, setEspecilidades] = useState(null);
   const [ventanaHoraria, setVentanaHoraria] = useState(null);
   const [tipoDocumentos, setTipoDocumentos] = useState(null);
+  const [tipoAtencion, setTipoAtencion] = useState(null);
 
   const [selectedHorarios, setSelectedHorarios] = useState([]);
 
@@ -41,6 +42,7 @@ const Doctor = () => {
     reqAppointmentService.getComboData()
       .then(({ data }) => {
         setTipoDocumentos(data.tipoDocumento);
+        setTipoAtencion(data.atencionData);
       });
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -75,6 +77,7 @@ const Doctor = () => {
         especilidades = {especilidades}
         ventanaHoraria = {ventanaHoraria}
         tipoDocumentos = {tipoDocumentos}
+        tipoAtencion = {tipoAtencion}
         selectedHorarios = {selectedHorarios}
         setSelectedHorarios = {setSelectedHorarios}
       />
