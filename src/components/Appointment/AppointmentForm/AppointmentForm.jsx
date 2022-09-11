@@ -109,6 +109,28 @@ function AppointmentForm({
     setDisponibilidad(data);
   }
 
+  const onDoctorFilterChange = async (e, name) => {
+    const values = e.value;
+    let _appointment = { ...appointment };
+    _appointment[`${name}`] = values;
+
+    if (_appointment.cod_especialidad && _appointment.cod_tipo_atencion) {
+      const doctorService = new DoctorService();
+      const { error, data } = await doctorService.getComboDoctor(_appointment.cod_especialidad, _appointment.cod_tipo_atencion);
+      if (error) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+
+      setDoctores(data);
+      setAppointment(_appointment);
+      return;
+    }
+
+    setAppointment({ ..._appointment, cod_doctor: '' });
+    setDoctores([]);
+    return;
+  }
+
   const appointmentDialogFooter = (
     <React.Fragment>
       <Button label='Cancelar' icon='pi pi-times' className='p-button-text' onClick={hideDialog} />
@@ -164,11 +186,11 @@ function AppointmentForm({
           <div className='group-form-doctor-appointment'>
             <div className='tespecialidad field'>
               <label htmlFor='cod_especialidad'>Especialidad</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_especialidad} options={tipoEspecialidad} onChange={(e) => onInputChange(e, 'cod_especialidad')} placeholder='Selecciona un plan'/>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_especialidad} options={tipoEspecialidad} onChange={(e) => onDoctorFilterChange(e, 'cod_especialidad')} placeholder='Selecciona un plan'/>
             </div>
             <div className='tatencion field'>
               <label htmlFor='cod_tipo_atencion'>Tipo Atencion</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_atencion} options={tipoAtencion} onChange={(e) => onInputChange(e, 'cod_tipo_atencion')} placeholder='Selecciona un programa'/>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_atencion} options={tipoAtencion} onChange={(e) => onDoctorFilterChange(e, 'cod_tipo_atencion')} placeholder='Selecciona un programa'/>
             </div>
             <div className='doctor field'>
               <label htmlFor='cod_doctor'>Doctor</label>

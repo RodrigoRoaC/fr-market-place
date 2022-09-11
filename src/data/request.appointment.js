@@ -32,6 +32,11 @@ let emptyReqAppointment = {
   direccion: '',
   email: '',
   telefono1: '',
+
+  cod_cita: '',
+  cod_especialidad: '',
+  cod_vent_horaria: '',
+  cod_doctor: '',
 };
 
 export default emptyReqAppointment;

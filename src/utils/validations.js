@@ -5,8 +5,12 @@ export const validateReqAppointmentValues = ({
   ape_materno,
   cod_tipo_doc,
   num_documento,
+  cod_doctor,
+  cod_vent_horaria,
+  fecha_reserva,
+  cod_tipo_atencion,
 }) => {
-  if (!fec_nacimiento || !nombres || !ape_paterno || !ape_materno || !cod_tipo_doc || !num_documento) {
+  if (!fec_nacimiento || !nombres || !ape_paterno || !ape_materno || !cod_tipo_doc || !num_documento || !cod_doctor || !cod_vent_horaria || !fecha_reserva || !cod_tipo_atencion) {
     return true; 
   }
 

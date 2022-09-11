@@ -9,10 +9,11 @@ import { InputText } from 'primereact/inputtext';
 
 import './RequestCrud.css';
 import { UserContext } from '../../../context/UserContext';
-import { parseReqAppointments } from '../../../utils/parser';
+import { dateToISOString, parseReqAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
 import emptyReqAppointment from '../../../data/request.appointment';
 import RequestForm from '../RequestForm/RequestForm';
+import { DoctorService } from '../../../services/Doctor/DoctorService';
 
 const RequestCrud = () => {
   const [appointments, setAppointments] = useState(null);
@@ -37,7 +38,12 @@ const RequestCrud = () => {
   const [tipoModalidad, setTipoModalidad] = useState(null);
   const [tipoServicio, setTServicio] = useState(null);
 
+  const [especialidades, setEspecialidades] = useState([]);
+  const [doctores, setDoctores] = useState([]);
+  const [disponibilidad, setDisponibilidad] = useState([]);
+
   const reqAppointmentService = new RequestAppointmentService();
+  const doctorService = new DoctorService();
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -58,6 +64,11 @@ const RequestCrud = () => {
         setTipoModalidad(data.modalidadData);
         setTServicio(data.servicioData);
       });
+    doctorService.getEspecialidades()
+      .then(res => setEspecialidades(res.data))
+      .catch(err => {
+        console.error(err);
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openNew = () => {
@@ -72,6 +83,7 @@ const RequestCrud = () => {
 
   const editAppointment = async (appointment) => {
     const ubigeoService = new UbigeoService();
+    const doctorService = new DoctorService();
     setAppointment({...appointment});
     if (appointment.departamento) {
       const { error, data: prov } = await ubigeoService.getProvincias(appointment.departamento);
@@ -80,9 +92,25 @@ const RequestCrud = () => {
       }
     }
     if (appointment.departamento && appointment.provincia) {
-      const { error, data: dis } = await ubigeoService.getDistritos(appointment.departamento, appointment.provincia);
-      if (!error) {
+      const { error: errDis, data: dis } = await ubigeoService.getDistritos(appointment.departamento, appointment.provincia);
+      if (!errDis) {
         setDistrito(dis);
+      }
+    }
+    if (appointment.fecha_programacion && appointment.cod_doctor) {
+      const { error: errVen, data: venhor } = await doctorService.getVentanaHorariaByDate({ 
+        fecha_reserva: dateToISOString(appointment.fecha_programacion), cod_doctor: appointment.cod_doctor
+      });
+      if (errVen) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+      
+      setDisponibilidad(venhor);
+    }
+    if (appointment.cod_especialidad && appointment.cod_tipo_atencion) {
+      const { error: errDoc, data: doc } = await doctorService.getComboDoctor(appointment.cod_especialidad, appointment.cod_tipo_atencion);
+      if (!errDoc) {
+        setDoctores(doc);
       }
     }
     setAppointmentDialog(true);
@@ -181,6 +209,12 @@ const RequestCrud = () => {
         tipoAtencion = {tipoAtencion}
         tipoModalidad = {tipoModalidad}
         tipoServicio = {tipoServicio}
+
+        especialidades = {especialidades}
+        doctores = {doctores}
+        setDoctores = {setDoctores}
+        disponibilidad = {disponibilidad}
+        setDisponibilidad = {setDisponibilidad}
       />
 
       <Dialog visible={deleteAppointmentDialog} style={{ width: '450px' }} header='Confirm' modal footer={deleteAppointmentDialogFooter} onHide={hideDeleteAppointmentDialog}>

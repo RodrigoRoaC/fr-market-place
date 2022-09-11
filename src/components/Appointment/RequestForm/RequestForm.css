@@ -77,15 +77,20 @@
 
 .group-form-cita {  
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1.5fr 1.5fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1.5fr 1.5fr;
   gap: 1em 1em;
   grid-auto-flow: row;
   grid-template-areas:
-    "fecprog horaprog ."
-    "sintomas sintomas sintomas"
-    "diagnostico diagnostico diagnostico";
+    "fecprog fecprog tespecialidad tespecialidad"
+    "doctor doctor horaprog horaprog"
+    "sintomas sintomas sintomas sintomas"
+    "diagnostico diagnostico diagnostico diagnostico";
 }
+
+.tespecialidad { grid-area: tespecialidad; }
+
+.doctor { grid-area: doctor; }
 
 .sintomas { grid-area: sintomas; }
 

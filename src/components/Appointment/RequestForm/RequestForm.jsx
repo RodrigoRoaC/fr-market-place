@@ -13,10 +13,11 @@ import { ConfirmDialog , confirmDialog } from 'primereact/confirmdialog';
 import './RequestForm.css';
 import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 import { UserContext } from '../../../context/UserContext';
-import { parseReqAppointments } from '../../../utils/parser';
+import { dateToISOString, parseReqAppointments } from '../../../utils/parser';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
 import { validateReqAppointmentValues } from '../../../utils/validations';
 import { PaymentService } from '../../../services/Payment/PaymentService';
+import { DoctorService } from '../../../services/Doctor/DoctorService';
 
 function RequestForm({ 
   appointmentDialog, 
@@ -40,6 +41,12 @@ function RequestForm({
   tipoAtencion = [],
   tipoModalidad = [],
   tipoServicio = [],
+
+  especialidades = [],
+  doctores = [],
+  setDoctores,
+  disponibilidad = [],
+  setDisponibilidad,
 }) {
   const { user } = useContext(UserContext);
 
@@ -218,6 +225,64 @@ function RequestForm({
     }
   }
 
+  const onDateChange = async (e, name) => {
+    const values = e.value;
+    let _appointment = { ...appointment };
+    _appointment[`${name}`] = values;
+
+    setAppointment(_appointment);
+
+    if (_appointment.cod_doctor) {
+      const doctorService = new DoctorService();
+      const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(values), cod_doctor: _appointment.cod_doctor });
+      if (error) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+      
+      setDisponibilidad(data);
+    }
+  }
+
+  const onDoctorChange = async (e, name) => {
+    const values = e.value;
+    let _appointment = { ...appointment };
+    _appointment[`${name}`] = values;
+
+    setAppointment(_appointment);
+
+    if (_appointment.fecha_programacion) {
+      const doctorService = new DoctorService();
+      const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(values), cod_doctor: _appointment.cod_doctor });
+      if (error) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+      
+      setDisponibilidad(data);
+    }
+  }
+
+  const onDoctorFilterChange = async (e, name) => {
+    const values = e.value;
+    let _appointment = { ...appointment };
+    _appointment[`${name}`] = values;
+
+    if (_appointment.cod_especialidad && _appointment.cod_tipo_atencion) {
+      const doctorService = new DoctorService();
+      const { error, data } = await doctorService.getComboDoctor(_appointment.cod_especialidad, _appointment.cod_tipo_atencion);
+      if (error) {
+        toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      }
+
+      setDoctores(data);
+      setAppointment(_appointment);
+      return;
+    }
+
+    setAppointment({ ..._appointment, cod_doctor: '' });
+    setDoctores([]);
+    return;
+  }
+
   const saveAppointment = async () => {
     const reqAppointmentService = new RequestAppointmentService();
     setSubmitted(true);
@@ -265,6 +330,13 @@ function RequestForm({
     });
   }
 
+  const setDoctorData = async (e) => {
+    if (!appointment.cod_especialidad || !appointment.cod_tipo_atencion) {
+      setDoctores([]);
+      toast.current.show({ severity: 'Error', summary: 'Warning', detail: 'Tienes que seleccionar una atencion y especialidad', life: 3000 });
+    }
+  }
+
   const appointmentDialogFooter = (
     <React.Fragment>
       { appointment.descripcion === 'REGISTRADA' && <Button label='Generar Pago' icon='pi pi-wallet' className='p-button-text' onClick={generatePayment()} /> }
@@ -290,17 +362,17 @@ function RequestForm({
             </div>
             <div className='apepat field'>
               <label htmlFor='apePat'>Apellido Paterno</label>
-              <InputText id='apePat' value={appointment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_paterno })} />
+              <InputText id='apePat' value={appointment.ape_paterno || ''} onChange={(e) => onInputChange(e, 'ape_paterno')} required className={classNames({ 'p-invalid': submitted && !appointment.ape_paterno })} />
               {submitted && !appointment.ape_paterno && <small className='p-error'>Apellido Paterno es requerido.</small>}
             </div>
             <div className='apemat field'>
               <label htmlFor='apeMat'>Apellido Materno</label>
-              <InputText id='apeMat' value={appointment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.ape_materno })} />
+              <InputText id='apeMat' value={appointment.ape_materno || ''} onChange={(e) => onInputChange(e, 'ape_materno')} required className={classNames({ 'p-invalid': submitted && !appointment.ape_materno })} />
               {submitted && !appointment.ape_materno && <small className='p-error'>Apellido Materno es requerido.</small>}
             </div>
             <div className='fnac field'>
               <label htmlFor='fecNac'>Fecha Nacimiento</label>
-              <Calendar dateFormat='dd/mm/yy' id='fecNac' value={appointment.fec_nacimiento || ''} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.fec_nacimiento })} showIcon />
+              <Calendar dateFormat='dd/mm/yy' id='fecNac' value={appointment.fec_nacimiento || ''} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required className={classNames({ 'p-invalid': submitted && !appointment.fec_nacimiento })} showIcon />
               {submitted && !appointment.fec_nacimiento && <small className='p-error'>Fecha de Nacimiento es requerido.</small>}
             </div>
             <div className='depa field'>
@@ -321,25 +393,25 @@ function RequestForm({
             </div>
             <div className='ndoc field'>
               <label htmlFor='num_documento'>N° Documento</label>
-              <InputText id='num_documento' value={appointment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.num_documento })} />
+              <InputText id='num_documento' value={appointment.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required className={classNames({ 'p-invalid': submitted && !appointment.num_documento })} />
               {submitted && !appointment.num_documento && <small className='p-error'>Documento es requerido.</small>}
             </div>
             <div className='email field'>
               <label htmlFor='email'>Email</label>
-              <InputText id='email' value={appointment.email || ''} onChange={(e) => onInputChange(e, 'email')} required autoFocus className={classNames({ 'p-invalid': submitted && !appointment.email })} />
+              <InputText id='email' value={appointment.email || ''} onChange={(e) => onInputChange(e, 'email')} required className={classNames({ 'p-invalid': submitted && !appointment.email })} />
               {submitted && !appointment.email && <small className='p-error'>Email es requerido.</small>}
             </div>
             <div className='direc field'>
               <label htmlFor='direccion'>Dirección</label>
-              <InputText id='direccion' value={appointment.direccion || ''} onChange={(e) => onInputChange(e, 'direccion')} required autoFocus className={classNames({ 'p-invalid': false })} />
+              <InputText id='direccion' value={appointment.direccion || ''} onChange={(e) => onInputChange(e, 'direccion')} required className={classNames({ 'p-invalid': false })} />
             </div>
             <div className='tel1 field'>
               <label htmlFor='telefono1'>Telefono 1</label>
-              <InputText id='telefono1' value={appointment.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required autoFocus className={classNames({ 'p-invalid': false })} />
+              <InputText id='telefono1' value={appointment.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required className={classNames({ 'p-invalid': false })} />
             </div>
             <div className='tel2 field'>
               <label htmlFor='telefono2'>Telefono 2</label>
-              <InputText id='telefono2' value={appointment.telefono2 || ''} onChange={(e) => onInputChange(e, 'telefono2')} required autoFocus className={classNames({ 'p-invalid': false })} />
+              <InputText id='telefono2' value={appointment.telefono2 || ''} onChange={(e) => onInputChange(e, 'telefono2')} required className={classNames({ 'p-invalid': false })} />
             </div>
           </div>
 
@@ -359,7 +431,8 @@ function RequestForm({
             </div>
             <div className='tatencion field'>
               <label htmlFor='cod_tipo_atencion'>Tipo Atencion</label>
-              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_atencion} options={tipoAtencion} onChange={(e) => onInputChange(e, 'cod_tipo_atencion')} placeholder='Selecciona una atencion'/>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_tipo_atencion} options={tipoAtencion} onChange={(e) => onDoctorFilterChange(e, 'cod_tipo_atencion')} placeholder='Selecciona una atencion' className={classNames({ 'p-invalid': submitted && !appointment.cod_tipo_atencion })}/>
+              {submitted && !appointment.cod_tipo_atencion && <small className='p-error'>Este campo es requerido.</small>}
             </div>
             <div className='tservicio field'>
               <label htmlFor='cod_tipo_servicio'>Tipo Servicio</label>
@@ -377,13 +450,24 @@ function RequestForm({
           </div>
         </Divider>
           <div className='group-form-cita'>
+            <div className='tespecialidad field'>
+              <label htmlFor='cod_especialidad'>Especialidad</label>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_especialidad} options={especialidades} onChange={(e) => onDoctorFilterChange(e, 'cod_especialidad')} placeholder='Selecciona un plan'/>
+            </div>
             <div className='fecprog field'>
               <label htmlFor='fecha_programacion'>Fecha Programacion</label>
-              <Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={appointment.fecha_programacion} onChange={(e) => onInputChange(e, 'fecha_programacion')} showIcon />
+              <Calendar dateFormat='dd/mm/yy' id='fecha_programacion' value={appointment.fecha_programacion} onChange={(e) => onDateChange(e, 'fecha_programacion')} showIcon className={classNames({ 'p-invalid': submitted && !appointment.fecha_programacion })} />
+              {submitted && !appointment.fecha_programacion && <small className='p-error'>Este campo es requerido.</small>}
+            </div>
+            <div className='doctor field'>
+              <label htmlFor='cod_doctor'>Doctor</label>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_doctor} options={doctores} onChange={(e) => onDoctorChange(e, 'cod_doctor')} placeholder='Selecciona un doctor' onMouseDown={(e) => setDoctorData(e)} className={classNames({ 'p-invalid': submitted && !appointment.cod_doctor })} />
+              {submitted && !appointment.cod_doctor && <small className='p-error'>Este campo es requerido.</small>}
             </div>
             <div className='horaprog field'>
-              <label htmlFor='hora_programacion'>Hora Programacion</label>
-              <Calendar timeOnly showTime hourFormat="12" id='hora_programacion' value={appointment.hora_programacion} onChange={(e) => onInputChange(e, 'hora_programacion')} />
+              <label htmlFor='cod_vent_horaria'>Horario</label>
+              <Dropdown optionLabel='label' optionValue='value' value={appointment.cod_vent_horaria} options={disponibilidad} onChange={(e) => onInputChange(e, 'cod_vent_horaria')} placeholder='Selecciona un horario' className={classNames({ 'p-invalid': submitted && !appointment.cod_vent_horaria })} />
+              {submitted && !appointment.cod_vent_horaria && <small className='p-error'>Este campo es requerido.</small>}
             </div>
             <div className='sintomas field'>
               <label htmlFor='sintomas'>Sintomas</label>
