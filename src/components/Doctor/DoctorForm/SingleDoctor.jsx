@@ -104,7 +104,7 @@ function SingleDoctor({
             </div>
             <div className='venhor field'>
               <label htmlFor='cod_vent_horaria'>Horario</label>
-              <MultiSelect optionLabel='label' optionValue='value' value={selectedHorarios} options={ventanaHoraria} placeholder='Selecciona un horario' disabled />
+              <MultiSelect optionLabel='label' optionValue='value' value={selectedHorarios} options={ventanaHoraria} placeholder='Selecciona un horario' />
             </div>
           </div>
       </div>

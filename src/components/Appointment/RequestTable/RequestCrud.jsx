@@ -105,7 +105,7 @@ const RequestCrud = () => {
         toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
       }
       
-      setDisponibilidad(venhor);
+      setDisponibilidad([{ label: appointment.horario, value: appointment.cod_vent_horaria }, ...venhor]);
     }
     if (appointment.cod_especialidad && appointment.cod_tipo_atencion) {
       const { error: errDoc, data: doc } = await doctorService.getComboDoctor(appointment.cod_especialidad, appointment.cod_tipo_atencion);
