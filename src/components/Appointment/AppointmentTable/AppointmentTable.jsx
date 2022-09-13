@@ -89,9 +89,9 @@ const AppointmentTable = ({
   }
 
   const deleteAppointment = async () => {
-    let _appointments = appointments.filter(val => val.cod_pago !== appointment.cod_pago);
-    const paymentService = new AppointmentService();
-    const { error, data } = await paymentService.nullifyPayment(appointment.cod_pago);
+    let _appointments = appointments.filter(val => val.cod_cita !== appointment.cod_cita);
+    const appointmentService = new AppointmentService();
+    const { error, data } = await appointmentService.cancel({ cod_cita: appointment.cod_cita, cod_usuario: appointment.cod_usuario });
     if (error) {
       toast.current.show({ severity: 'error', summary: 'Error deleting payment', detail: 'Deleted failed', life: 3000 });
       return;

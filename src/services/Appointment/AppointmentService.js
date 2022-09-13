@@ -35,9 +35,9 @@ export class AppointmentService {
     }
   }
 
-  async delete({ cod_cita }) {
+  async cancel({ cod_cita, cod_usuario }) {
     try {
-      const response = await client.post(`/appointment/remove`, { cod_cita });
+      const response = await client.post(`/appointment/cancel`, { cod_cita, cod_usuario });
 
       return { data: response.data };
     } catch (err) {
