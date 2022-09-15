@@ -36,6 +36,12 @@ export const SidebarData = [
     acl: [1, 4, 5]
   },
   {
+    title: 'Indicadores',
+    path: '/indicator',
+    cName: 'nav-text',
+    acl: [1, 2, 3, 4, 5, 6, 7]
+  },
+  {
     title: 'Perfil',
     path: '/profile',
     cName: 'nav-text',
