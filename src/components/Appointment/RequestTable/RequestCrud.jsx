@@ -153,7 +153,7 @@ const RequestCrud = () => {
       <span className='p-input-icon-left'>
         <i className='pi pi-search' />
         <InputText type='search' onInput={(e) => setGlobalFilter(e.target.value || ' ')} placeholder='Search...' />
-        <Button label='New' icon='pi pi-plus' className='white new-button' onClick={openNew} />
+        <Button label='Nuevo' icon='pi pi-plus' className='white new-button' onClick={openNew} />
       </span>
     </div>
   );

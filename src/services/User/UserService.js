@@ -22,4 +22,15 @@ export class UserService {
       return { error: err }
     }
   }
+
+  async getPatientByDoc(numDoc) {
+    try {
+      const response = await client.get(`/user/patient/${numDoc}`);
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: err }
+    }
+  }
 }

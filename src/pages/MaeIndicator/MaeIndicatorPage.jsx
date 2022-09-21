@@ -1,41 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react'
-import IndicatorForm from '../../components/IndicatorForm/IndicatorForm';
-import IndicatorTable from '../../components/IndicatorTable/IndicatorTable';
-import emptyIndicator from '../../data/indicator';
-import { IndicatorService } from '../../services/Indicator/IndicatorService';
-import { parseIndicators } from '../../utils/parser';
+import GenericForm from '../../components/IndicatorForm/GenericForm';
+import IndicatorGenericTable from '../../components/IndicatorTable/GenericTable';
 
-const IndicatorPage = () => {
+import emptyGenericIndicator from '../../data/indicator-generic';
+import { IndicatorService } from '../../services/Indicator/IndicatorService';
+
+const MaeIndicatorPage = () => {
   const toast = useRef(null);
-  const [reload, setReload] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [indicator, setIndicator] = useState({});
   const [indicators, setIndicators] = useState(null);
   const [indicatorDialog, setIndicatorDialog] = useState(null);
   
+  const indicatorService = new IndicatorService();
+
   useEffect(() => {
-    const indicatorService = new IndicatorService();
-    indicatorService.list()
-      .then(res => setIndicators(parseIndicators(res.data)))
+    indicatorService.listMae()
+      .then(res => setIndicators(res.data))
       .catch(err => {
         console.error(err);
         setIndicators([]);
       });
-  }, [reload]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className='wrapper'>
-      <IndicatorTable
+      <IndicatorGenericTable
         toast = {toast}
         setIndicatorDialog = {setIndicatorDialog}
-        indicator = {indicator}
         setIndicator = {setIndicator}
         indicators = {indicators}
-        setIndicators = {setIndicators}
-        reload = {reload}
-        setReload = {setReload}
+        setSubmitted = {setSubmitted}
+        emptyIndicator = {emptyGenericIndicator}
       />
-      <IndicatorForm
+      <GenericForm
         toast = {toast}
         indicatorDialog = {indicatorDialog}
         indicator = {indicator}
@@ -45,10 +43,10 @@ const IndicatorPage = () => {
         setIndicator = {setIndicator}
         indicators = {indicators}
         setIndicators = {setIndicators}
-        emptyIndicator = {emptyIndicator}
+        emptyIndicator = {emptyGenericIndicator}
       />
     </div>
   )
 }
 
-export default IndicatorPage;
+export default MaeIndicatorPage;

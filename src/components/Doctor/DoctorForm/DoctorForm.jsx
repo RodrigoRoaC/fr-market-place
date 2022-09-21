@@ -75,7 +75,7 @@ function DoctorForm({
     let _doctors = [...doctors];
 
     if (mode !== 'CREATE') {
-      const index = findIndexById(doctor.cod_pago);
+      const index = findIndexById(doctor.cod_doctor);
       const updateRes = await doctorService.update({ ...doctor, cod_resp: user.cod_usuario });
       if (updateRes.error) {
         toast.current.show({ severity: 'error', summary: 'Doctor Edit error', detail: 'Edit failed', life: 3000 });
@@ -122,7 +122,8 @@ function DoctorForm({
       { fecha_reserva: dateToISOString(_doctor.fecha_reserva || null), cod_doctor: doctor.cod_doctor }
     );
     if (error) {
-      toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      // toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
+      // return;
     }
     setSelectedHorarios((data || []).map(d => d.value));
 

@@ -9,6 +9,7 @@ import DoctorPage from '../pages/Doctor/Doctor';
 import SingleDoctorPage from '../pages/Doctor/SingleDoctor';
 import AppointmentPage from '../pages/Appointment/Appointment';
 import IndicatorPage from '../pages/Indicator/IndicatorPage';
+import MaeIndicatorPage from '../pages/MaeIndicator/MaeIndicatorPage';
 
 function MarketRoutes() {
   return (
@@ -23,6 +24,7 @@ function MarketRoutes() {
         <Route path='/doctor-availability' element={<SingleDoctorPage />} />
         <Route path='/medical-availability' element={<DoctorPage />} />
         <Route path='/indicator' element={<IndicatorPage />} />
+        <Route path='/generic-indicator' element={<MaeIndicatorPage />} />
 
         <Route path='/*' element={<Navigate to='/' />}/>
       </Routes>

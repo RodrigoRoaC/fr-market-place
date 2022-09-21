@@ -1,0 +1,81 @@
+
+/**
+  Form
+*/
+
+.p-dialog-header { 
+  border-bottom: 1px solid var(--gray-500) !important;
+}
+
+.p-dialog-footer { 
+  border-top: 1px solid var(--gray-300) !important;
+  padding: 1rem !important;
+}
+
+.group-form-generic-indicator {  
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.5fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nombre nombre nombre nombre"
+    "ranmin ranmin ranmax ranmax"
+}
+
+.nombre { grid-area: nombre; }
+
+.ranmin { grid-area: ranmin; }
+
+.ranmax { grid-area: ranmax; }
+
+.group-form-indicator-mae {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.5fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "codmae desmae desmae desmae"
+    "ranmin ranmin ranmax ranmax"
+}
+
+.codmae { grid-area: codmae; }
+
+.desmae { grid-area: desmae; }
+
+.group-form-indicator-paciente {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.5fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "numdoc numdoc btnsearch btnsearch"
+    "codpac nombrepac nombrepac nombrepac"
+}
+
+.numdoc { grid-area: numdoc; }
+
+.btnsearch { grid-area: btnsearch; }
+
+.codpac { grid-area: codpac; }
+
+.nombrepac { grid-area: nombrepac; }
+
+.group-form-indicator-registro {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "valor valor fecate fecate"
+    "descripcion descripcion descripcion descripcion"
+}
+
+.valor { grid-area: valor; }
+
+.fecate { grid-area: fecate; }
+
+.descripcion { grid-area: descripcion; }

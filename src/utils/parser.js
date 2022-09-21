@@ -23,7 +23,13 @@ export const parseAppointments = (appointments = []) => appointments.map((app) =
   ...app,
   fecha_reserva: app.fecha_reserva ? new Date(app.fecha_reserva) : null,
   fecha_programacion: app.fecha_programacion ? new Date(app.fecha_programacion) : null,
-  f_programacion: app.fecha_programacion ? new Date(app.fecha_programacion).toLocaleDateString() : null,
+  f_programacion: app.fecha_reserva ? new Date(app.fecha_reserva).toLocaleDateString() : null,
+}));
+
+export const parseIndicators = (indicators = []) => indicators.map((ind) => ({
+  ...ind,
+  fec_atencion: ind.fec_atencion ? new Date(ind.fec_atencion) : null,
+  fecha_atencion: ind.fec_atencion ? new Date(ind.fec_atencion).toLocaleDateString() : null,
 }));
 
 const parseTime = (time) => {
@@ -39,3 +45,9 @@ export const dateToISOString = (date) => {
 
   return `${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`;
 };
+
+export const parsePatientIndicator = (patient) => ({
+  cod_paciente: patient.cod_paciente,
+  nombres_paciente: `${patient.nombres} ${patient.ape_paterno || ''} ${patient.ape_materno || ''}`,
+  num_documento: patient.num_documento,
+});

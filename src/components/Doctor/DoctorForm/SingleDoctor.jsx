@@ -42,7 +42,7 @@ function SingleDoctor({
     setDoctor(_doctor);
 
     const doctorService = new DoctorService();
-    const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(), cod_doctor: doctor.cod_doctor });
+    const { error, data } = await doctorService.getVentanaHorariaByDate({ fecha_reserva: dateToISOString(values), cod_doctor: doctor.cod_doctor });
     if (error) {
       toast.current.show({ severity: 'error', summary: 'Error getting availability', detail: 'Availability failed', life: 3000 });
     }
