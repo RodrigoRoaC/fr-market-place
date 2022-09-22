@@ -45,9 +45,20 @@ export class IndicatorService {
     }
   }
 
-  async listMae(payload) {
+  async listMae() {
     try {
-      const response = await client.get('/indicator/mae', payload);
+      const response = await client.get('/indicator/mae');
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: true }
+    }
+  }
+
+  async listComboMae() {
+    try {
+      const response = await client.get('/indicator/mae/combo');
 
       return { data: response.data };
     } catch (err) {
@@ -70,6 +81,17 @@ export class IndicatorService {
   async updateMae(payload) {
     try {
       const response = await client.put('/indicator/mae', payload);
+
+      return { data: response.data };
+    } catch (err) {
+      console.error(err);
+      return { error: true }
+    }
+  }
+
+  async patientResults({ cod_mae_indicator, cod_patient }) {
+    try {
+      const response = await client.get(`/indicator/patient/results?cod_mae_indicator=${cod_mae_indicator}&cod_patient=${cod_patient}`);
 
       return { data: response.data };
     } catch (err) {

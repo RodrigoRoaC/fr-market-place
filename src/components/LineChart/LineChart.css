@@ -1,0 +1,15 @@
+.group-form-line-chart {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1.5fr;
+  gap: 1em 1em;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "nombre nombre indicator indicator btnsearch"
+}
+
+.nombre { grid-area: nombre; }
+
+.indicator { grid-area: indicator; }
+
+.btnsearch { grid-area: btnsearch; }

@@ -39,7 +39,7 @@ export const SidebarData = [
     title: 'Indicadores',
     path: '/indicator',
     cName: 'nav-text',
-    acl: [4, 5]
+    acl: [4, 5, 6, 7]
   },
   {
     title: 'Indicador Generico',

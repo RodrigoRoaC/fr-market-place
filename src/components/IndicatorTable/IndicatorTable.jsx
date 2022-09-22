@@ -24,6 +24,7 @@ const IndicatorTable = ({
   setIndicators,
   reload,
   setReload,
+  setChartDialog,
 }) => {
   const { user } = useContext(UserContext);
   const [selectedIndicator, setSelectedIndicators] = useState(null);
@@ -89,6 +90,10 @@ const IndicatorTable = ({
     event.options.clear();
   };
 
+  const openChart = () => {
+    setChartDialog(true);
+  }
+
   const header = (
     <div className='table-header'>
       <h2 className='mx-0 my-1'>Indicadores</h2>
@@ -107,6 +112,7 @@ const IndicatorTable = ({
           className = 'mr-2' 
           uploadHandler = {onUpload}
         />
+        <Button label='Paciente' icon='pi pi-search' className='white new-button' onClick={openChart} />
       </div>
     </div>
   );

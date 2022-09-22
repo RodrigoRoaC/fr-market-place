@@ -1,6 +1,8 @@
+import { Toast } from 'primereact/toast';
 import React, { useEffect, useRef, useState } from 'react'
 import IndicatorForm from '../../components/IndicatorForm/IndicatorForm';
 import IndicatorTable from '../../components/IndicatorTable/IndicatorTable';
+import LineChartDialog from '../../components/LineChart/LineChartDialog';
 import emptyIndicator from '../../data/indicator';
 import { IndicatorService } from '../../services/Indicator/IndicatorService';
 import { parseIndicators } from '../../utils/parser';
@@ -11,8 +13,9 @@ const IndicatorPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [indicator, setIndicator] = useState({});
   const [indicators, setIndicators] = useState(null);
-  const [indicatorDialog, setIndicatorDialog] = useState(null);
-  
+  const [indicatorDialog, setIndicatorDialog] = useState(false);
+  const [chartDialog, setChartDialog] = useState(false);
+
   useEffect(() => {
     const indicatorService = new IndicatorService();
     indicatorService.list()
@@ -25,6 +28,7 @@ const IndicatorPage = () => {
 
   return (
     <div className='wrapper'>
+      <Toast ref={toast} />
       <IndicatorTable
         toast = {toast}
         setIndicatorDialog = {setIndicatorDialog}
@@ -34,6 +38,12 @@ const IndicatorPage = () => {
         setIndicators = {setIndicators}
         reload = {reload}
         setReload = {setReload}
+        setChartDialog = {setChartDialog}
+      />
+      <LineChartDialog
+        toast = {toast}
+        chartDialog = {chartDialog}
+        setChartDialog = {setChartDialog}
       />
       <IndicatorForm
         toast = {toast}
