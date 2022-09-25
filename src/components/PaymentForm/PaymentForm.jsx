@@ -136,7 +136,7 @@ function PaymentForm({
   );
 
   return (
-    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Registrar pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
+    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Completar datos pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
       <div className='div-form-table'>
           <Divider align="left">
             <div className="inline-flex align-items-center">

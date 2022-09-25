@@ -12,9 +12,7 @@ let emptyReqAppointment = {
   cod_iafa: '',
 
   fecha_programacion: '',
-  fecha_autorizacion: '',
   hora_programacion: '',
-  numero_autorizacion: '',
   sintomas: '',
   diagnostico: '',
 

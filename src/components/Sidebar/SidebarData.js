@@ -1,9 +1,9 @@
 export const SidebarData = [
   {
-    title: 'Principal',
-    path: '/',
+    title: 'Solicitud',
+    path: '/user-request',
     cName: 'nav-text',
-    acl: [1, 2, 3, 4, 5, 6, 7]
+    acl: [6, 7]
   },
   {
     title: 'Atencion',
@@ -15,7 +15,7 @@ export const SidebarData = [
     title: 'Pagos',
     path: '/payment',
     cName: 'nav-text',
-    acl: [1, 3, 6, 7]
+    acl: [1, 2, 3, 6, 7]
   },
   {
     title: 'Medicos',

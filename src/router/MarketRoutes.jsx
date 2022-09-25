@@ -10,6 +10,7 @@ import SingleDoctorPage from '../pages/Doctor/SingleDoctor';
 import AppointmentPage from '../pages/Appointment/Appointment';
 import IndicatorPage from '../pages/Indicator/IndicatorPage';
 import MaeIndicatorPage from '../pages/MaeIndicator/MaeIndicatorPage';
+import ManageAppointmentPage from '../pages/Appointment/ManageAppointment';
 
 function MarketRoutes() {
   return (
@@ -19,6 +20,7 @@ function MarketRoutes() {
         <Route path='/' element={<HomePage />} />
         <Route path='/payment' element={<PaymentPage />} />
         {/* <Route path='/profile' element={<RequestAppointmentPage />} /> */}
+        <Route path='/user-request' element={<ManageAppointmentPage />} />
         <Route path='/request-appointment' element={<RequestAppointmentPage />} />
         <Route path='/medical-appointment' element={<AppointmentPage />} />
         <Route path='/doctor-availability' element={<SingleDoctorPage />} />

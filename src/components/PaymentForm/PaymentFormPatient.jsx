@@ -86,7 +86,7 @@ function PaymentFormPatient({
   );
 
   return (
-    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Registrar pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
+    <Dialog visible={paymentDialog} style={{ width: '650px'}} header='Ver datos pago' modal className='p-fluid' footer={paymentDialogFooter} onHide={hideDialog}>
       <div className='div-form-table'>
           <Divider align="left">
             <div className="inline-flex align-items-center">
@@ -146,10 +146,12 @@ function PaymentFormPatient({
               <label htmlFor='link_pago'>Link de pago</label>
               <InputText id='link_pago' value={payment.link_pago || ''} onChange={(e) => onInputChange(e, 'link_pago')} required autoFocus className={classNames({ 'p-invalid': submitted && !payment.link_pago })} disabled={disablePatient} />
             </div>
-            <div className='btnsend field'>
-              <label htmlFor='link_pago' className='send-link'>Link de pago</label>
-              <Button label='Enviar link' icon='pi pi-envelope' onClick={sendPaymentLink} disabled={disablePatient} />
-            </div>
+            {
+              disablePayment && (<div className='btnsend field'>
+                <label htmlFor='link_pago' className='send-link'>Link de pago</label>
+                <Button label='Enviar link' icon='pi pi-envelope' onClick={sendPaymentLink} disabled={disablePatient} />
+              </div>)
+            }
             <div className='diagnostico field'>
               <label htmlFor='observaciones'>Observaciones</label>
               <InputTextarea id='observaciones' value={payment.observaciones || ''} onChange={(e) => onInputChange(e, 'observaciones')} required rows={3} cols={20}  disabled={disablePatient} />
