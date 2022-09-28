@@ -40,7 +40,9 @@ export class UserService {
 
       return { data: response.data };
     } catch (err) {
-      console.error(err);
+      if (err.response.status === 404) {
+        return { data: null };
+      }
       return { error: err }
     }
   }

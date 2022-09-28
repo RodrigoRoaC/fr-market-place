@@ -9,6 +9,8 @@ const SecondStep = ({
   setActiveIndex,
   form,
   setForm,
+  tipoAtencion,
+  tipoModalidad,
 }) => {
   const [submitted, setSubmitted] = useState(false);
 
@@ -23,39 +25,21 @@ const SecondStep = ({
     },
   ];
 
-  const tipoAtencion = [
-    {
-      label: 'Agudo',
-      value: 3
-    },
-    {
-      label: 'Crónico',
-      value: 2
-    },
-  ];
-
-  const tipoModalidad = [
-    {
-      label: 'Presencial',
-      value: 1
-    },
-    {
-      label: 'Virtual',
-      value: 2
-    },
-  ];
-
   const previousButton = () => {
     setActiveIndex(currentStep - 1);
   }
 
   const nextButton = () => {
     setSubmitted(true);
+    if (!form.cod_modalidad) {
+      setForm({ ...form, cod_modalidad: 1 });
+    }
     if (form.hasMedicalRecord && form.atentionType === 1 && form.cod_tipo_atencion === 2) {
       setActiveIndex(currentStep + 2);
       return;
     }
     setActiveIndex(currentStep + 1);
+    setSubmitted(false);
   }
 
   const onInputChange = (e, name) => {

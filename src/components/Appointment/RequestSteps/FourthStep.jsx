@@ -1,17 +1,16 @@
 import React from 'react';
 import { Button } from 'primereact/button';
+import { fields } from '../../../data/appointment-flow';
 
 const FourthStep = ({
   currentStep,
   setActiveIndex,
   form,
+  setForm,
 }) => {
   const closeButton = () => {
-    if (form.hasMedicalRecord && form.atentionType === 1 && form.cod_tipo_atencion === 2) {
-      setActiveIndex(currentStep - 2);
-      return;
-    }
-    setActiveIndex(currentStep - 1);
+    setForm({ ...fields });
+    setActiveIndex(0);
   }
 
   return (

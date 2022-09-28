@@ -6,6 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { AutoComplete } from 'primereact/autocomplete';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
+import { RequestAppointmentService } from '../../../services/RequestAppointmentService';
 
 const ThirdStep = ({
   toast,
@@ -38,13 +39,41 @@ const ThirdStep = ({
     },
   ];
 
+  const isValidateThirdStep = (form) => {
+    if (
+      !form.num_documento ||
+      !form.fec_nacimiento ||
+      !form.cod_tipo_doc ||
+      !form.email ||
+      !form.telefono1 ||
+      !form.nombres ||
+      !form.ape_paterno ||
+      !form.ape_materno
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
   const previousButton = () => {
     setActiveIndex(currentStep - 1);
   }
 
-  const nextButton = () => {
+  const nextButton = async () => {
     setSubmitted(true);
+    if (!isValidateThirdStep(form)) {
+      return;
+    }
+    const reqAppointmentService = new RequestAppointmentService();
+    const { error } = await reqAppointmentService.register({ ...form, cod_tipo_servicio: 1, isReqByUser: true });
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Error', detail: 'Register appointment error', life: 3000 });
+      return;
+    }
+
     setActiveIndex(currentStep + 1);
+    setSubmitted(false);
   }
 
   const onInputChange = (e, name) => {
@@ -202,7 +231,8 @@ const ThirdStep = ({
               </div>
               <div className='tel1 field'>
                 <label htmlFor='telefono1'>Telefono 1</label>
-                <InputText id='telefono1' value={form.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required className={classNames({ 'p-invalid': false })} />
+                <InputText id='telefono1' value={form.telefono1 || ''} onChange={(e) => onInputChange(e, 'telefono1')} required className={classNames({ 'p-invalid': submitted && !form.telefono1 })} />
+                {submitted && !form.telefono1 && <small className='p-error'>Este campo es requerido.</small>}
               </div>
               <div className='tel2 field'>
                 <label htmlFor='telefono2'>Telefono 2</label>

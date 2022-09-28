@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Link } from "react-router-dom";
 import { SidebarData } from './SidebarData';
 
@@ -9,9 +9,6 @@ import { Button } from 'primereact/button';
 
 function Sidebar() {
   const { user, setUser} = useContext(UserContext);
-  // const [sidebar, setSidebar] = useState(false);
-
-  // const showSidebar = () => setSidebar(!sidebar);
 
   const logOut = () => {
     localStorage.removeItem('cmd_user');
@@ -20,17 +17,11 @@ function Sidebar() {
 
   return (
     <>
-      {/* <div className='navbar'>
-        <Link to='#' className='menu-bars'>
-          <i className="pi pi-bars" onClick={ showSidebar }></i>
-        </Link>
-        <h2>Proyecto Marketplace CMD</h2>
-      </div> */}
       <nav className='nav-menu active'>
         <ul className='nav-menu-items'>
           <div class="perfil">
             <i class='pi pi-align-left'></i>
-            <span class="perfil_name">{user.cod_perfil}</span>
+            <span class="perfil_name">{user.nom_perfil}</span>
           </div>
           {
             SidebarData.map((item, index) => {

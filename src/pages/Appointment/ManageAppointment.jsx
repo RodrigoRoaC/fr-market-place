@@ -14,13 +14,20 @@ const ManageAppointment = () => {
   const toast = useRef(null);
   const [form, setForm] = useState({...fields});
   
-  const [departamentos, setDepartamentos] = useState(0);
+  const [departamentos, setDepartamentos] = useState([]);
+  const [tipoAtencion, setTipoAtencion] = useState([]);
+  const [tipoModalidad, setTipoModalidad] = useState([]);
 
   useEffect(() => {
     const reqAppointmentService = new RequestAppointmentService();
     reqAppointmentService.getComboData()
-      .then(({ data }) => setDepartamentos(data.departamento));
-  }, [])
+      .then(({ data }) => {
+        const _filterAtentionData = data.atencionData.filter(ad => [2, 3].includes(ad.value));
+        setDepartamentos(data.departamento);
+        setTipoAtencion(_filterAtentionData);
+        setTipoModalidad(data.modalidadData);
+      });
+  }, []);
 
   return (
     <div className='step-wrapper'>
@@ -45,6 +52,8 @@ const ManageAppointment = () => {
         setActiveIndex = {setActiveIndex}
         form = {form}
         setForm = {setForm}
+        tipoAtencion = {tipoAtencion}
+        tipoModalidad = {tipoModalidad}
       />
       <ThirdStep 
         toast = {toast}

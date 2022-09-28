@@ -3,8 +3,10 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Calendar } from 'primereact/calendar';
+import { UserService } from '../../../services/User/UserService';
 
 const FirstStep = ({
+  toast,
   currentStep,
   setActiveIndex,
   form,
@@ -20,12 +22,26 @@ const FirstStep = ({
     return true;
   }
 
-  const nextButton = () => {
+  const nextButton = async () => {
     setSubmitted(true);
     if (!isValidateFirstStep(form)) {
       return;
     }
+    const userService = new UserService();
+    const { error, data } = await userService.getPatientByDoc(form.num_documento);
+    if (error) {
+      toast.current.show({ severity: 'error', summary: 'Error', detail: 'Error retrieving user information', life: 3000 });
+      return;
+    }
+    if (!data) {
+      setForm({ ...form, hasMedicalRecord: false });
+      setActiveIndex(currentStep + 1);
+      return;
+    }
+
+    setForm({ ...form, hasMedicalRecord: true });
     setActiveIndex(currentStep + 1);
+    setSubmitted(false);
   }
 
   const onInputChange = (e, name) => {

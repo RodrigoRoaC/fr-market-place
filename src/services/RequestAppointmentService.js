@@ -14,8 +14,8 @@ export class RequestAppointmentService {
 
   async register(appointment) {
     try {
+      console.log(appointment);
       const response = await client.post('/request-appointment/register', appointment);
-
       return { data: response.data };
     } catch (err) {
       console.error(err);

@@ -48,11 +48,12 @@ export const flow = {
 };
 
 export const fields = {
+  isReqByUser: true,
   hasMedicalRecord: false,
   atentionType: '',
 
   cod_tipo_atencion: '',
-  cod_tipo_servicio: '',
+  cod_tipo_servicio: 1,
   cod_modalidad: '',
   cod_iafa: '',
   fecha_programacion: '',
@@ -68,5 +69,7 @@ export const fields = {
   direccion: '',
   email: '',
   telefono1: '',
-
+  nombres: '',
+  ape_paterno: '',
+  ape_materno: '',
 };
