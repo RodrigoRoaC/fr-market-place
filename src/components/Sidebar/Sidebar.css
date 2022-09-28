@@ -24,20 +24,14 @@
 }
 
 .nav-menu {
-  background-color: var(--indigo-400);
+  background-color: #2D2F59;
   width: 250px;
   height: 100vh;
   display: flex;
   justify-content: center;
   position: fixed;
   top: 0;
-  left: -100%;
-  transition: 850ms;
-}
-
-.nav-menu.active {
   left: 0;
-  transition: 350ms;
 }
 
 .nav-text {
@@ -91,4 +85,27 @@
 .cerrar-sesion {
   position: absolute;
   bottom: .5rem;
+}
+
+.nav-menu-items .perfil{
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.nav-menu-items .perfil i{
+  font-size: 1.5rem;
+  color: #fff;
+  height: 50px;
+  min-width: 78px;
+  text-align: center;
+  line-height: 50px;
+}
+
+.nav-menu-items > .perfil > .perfil_name{
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
 }
