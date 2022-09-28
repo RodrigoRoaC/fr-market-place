@@ -7,6 +7,7 @@ import ThirdStep from '../../components/Appointment/RequestSteps/ThirdStep';
 import Stepper from '../../components/Stepper/Stepper';
 import { fields, steps } from '../../data/appointment-flow';
 import { RequestAppointmentService } from '../../services/RequestAppointmentService';
+import './ManageAppointment.css';
 
 const ManageAppointment = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -22,7 +23,7 @@ const ManageAppointment = () => {
   }, [])
 
   return (
-    <div className='wrapper'>
+    <div className='step-wrapper'>
       <Toast ref={toast} />
       <Stepper
         interactive={false}

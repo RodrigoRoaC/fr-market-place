@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { Calendar } from 'primereact/calendar';
-import { AutoComplete } from 'primereact/autocomplete';
 import { Dropdown } from 'primereact/dropdown';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { AutoComplete } from 'primereact/autocomplete';
 import { UbigeoService } from '../../../services/Ubigeo/UbigeoService';
 
 const ThirdStep = ({
@@ -148,8 +148,8 @@ const ThirdStep = ({
         currentStep === 2
         && 
         (
-          <div>
-            <div className='group-form-contac'>
+          <div className='third_step'>
+            <div className='third_step-form'>
               <div className='nombre field'>
                 <label htmlFor='nombres'>Nombre</label>
                 <InputText id='nombres' value={form.nombres || ''} onChange={(e) => onInputChange(e, 'nombres')} required autoFocus className={classNames({ 'p-invalid': submitted && !form.nombres })} />
@@ -209,8 +209,10 @@ const ThirdStep = ({
                 <InputText id='telefono2' value={form.telefono2 || ''} onChange={(e) => onInputChange(e, 'telefono2')} required className={classNames({ 'p-invalid': false })} />
               </div>
             </div>
-            <Button label='Anterior' onClick={previousButton} />
-            <Button label='Registrar solicitud' onClick={nextButton} />
+            <div className='third_step-button'>
+              <Button label='Anterior' onClick={previousButton} />
+              <Button label='Registrar solicitud' onClick={nextButton} />
+            </div>
           </div>
         )
       }

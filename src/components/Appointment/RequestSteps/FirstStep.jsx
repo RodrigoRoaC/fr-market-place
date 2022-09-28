@@ -42,8 +42,8 @@ const FirstStep = ({
         currentStep === 0 
         && 
         (
-          <div>
-            <div>
+          <div className="first_step">
+            <div className="first_step-form">
               <div className='num_documento field'>
                 <label htmlFor='num_documento'>Numero de documento</label>
                 <InputText id='num_documento' value={form.num_documento || ''} onChange={(e) => onInputChange(e, 'num_documento')} required autoFocus className={classNames({ 'p-invalid': submitted && !form.num_documento })} />
@@ -51,11 +51,13 @@ const FirstStep = ({
               </div>
               <div className='fnac field'>
                 <label htmlFor='fecNac'>Fecha Nacimiento</label>
-                <Calendar dateFormat='dd/mm/yy' id='fecNac' value={form.fec_nacimiento || ''} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required className={classNames({ 'p-invalid': submitted && !form.fec_nacimiento })} showIcon />
+                <Calendar mask="99/99/9999" dateFormat='dd/mm/yy' id='fecNac' value={form.fec_nacimiento || ''} onChange={(e) => onInputChange(e, 'fec_nacimiento')} required className={classNames({ 'p-invalid': submitted && !form.fec_nacimiento })} showIcon />
                 {submitted && !form.fec_nacimiento && <small className='p-error'>Este campo es requerido.</small>}
               </div>
             </div>
-            <Button label='Siguiente' onClick={nextButton} />
+            <div className='first_step-button'>
+              <Button label='Siguiente' onClick={nextButton} />
+            </div>
           </div>
         )
       }

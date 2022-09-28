@@ -1,0 +1,119 @@
+.step-wrapper { 
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    height: auto;
+    padding: 2rem 2.5rem;
+    margin: 15px 100px 0px 250px;
+    min-height: 500px;
+}
+
+.first_step, .second_step, .fourth_step {
+    margin-top: 40px;
+    min-height: 335px;
+    display: grid;
+    grid-template-columns: 1fr 230px;
+    grid-template-rows: 1fr 60px;
+    grid-template-areas: "form form"
+                         ". button";
+}
+
+.third_step { 
+    margin-top: 40px;
+    min-height: 335px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    grid-template-rows: 1fr 60px;
+    grid-template-areas: "form form"
+                         ". button";
+}
+
+.first_step-form, .second_step-form, .fourth_step-label {
+    grid-area: form;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.third_step-form {
+    grid-area: form;
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-template-rows: repeat(5,1fr);
+    gap: 1em 1em;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "nombre nombre apepat apepat apemat apemat"
+        "tdoc tdoc ndoc ndoc fnac fnac"
+        "depa depa prov prov dist dist"
+        "email email email email tel1 tel2"
+        "direc direc direc direc direc direc";
+}
+
+.first_step-form .field,
+.second_step-form .field {
+    margin-top: .5rem;
+}
+
+.first_step-form .field,
+.first_step-form div.p-dropdown {
+    width: 250px;
+}
+
+.second_step-form .field,
+.second_step-form .field textarea {
+    width: 350px;
+}
+
+.first_step-form span,
+.first_step-form input,
+.second_step-form span,
+.second_step-form input, 
+.second_step-form div.p-dropdown,
+.third_step-form input, 
+.third_step-form span,
+.third_step-form div.p-dropdown {
+    width: 100%;
+}
+
+.first_step-button, .second_step-button, .third_step-button, .fourth_step-button {
+    grid-area: button;
+    display: flex;
+    align-items: flex-end;
+}
+
+.first_step-button, .fourth_step-button {
+    flex-direction: column;
+    justify-content: center;
+}
+
+.second_step-button, .third_step-button {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nombre { grid-area: nombre; }
+
+.tdoc { grid-area: tdoc; }
+
+.apepat { grid-area: apepat; }
+
+.apemat { grid-area: apemat; }
+
+.ndoc { grid-area: ndoc; }
+
+.fnac { grid-area: fnac; }
+
+.tel1 { grid-area: tel1; }
+
+.tel2 { grid-area: tel2; }
+
+.depa { grid-area: depa; }
+
+.prov { grid-area: prov; }
+
+.dist { grid-area: dist; }
+
+.email { grid-area: email; }
+
+.direc { grid-area: direc; }

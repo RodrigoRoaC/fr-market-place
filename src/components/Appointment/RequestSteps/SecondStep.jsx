@@ -85,8 +85,8 @@ const SecondStep = ({
         currentStep === 1
         && 
         (
-          <div>
-            <div>
+          <div className='second_step'>
+            <div className="second_step-form">
               <div className='tdoc field'>
                 <label htmlFor='cod_tipo_doc'>Tipo Cita</label>
                 <Dropdown optionLabel='label' optionValue='value' value={form.atentionType || ''} options={tipoCita} onChange={(e) => onAttentionTypeChange(e, 'atentionType')} placeholder='Seleccionar'/>
@@ -126,8 +126,10 @@ const SecondStep = ({
                 </div>
               }
             </div>
-            <Button label='Anterior' onClick={previousButton} />
-            <Button label='Siguiente' onClick={nextButton} />
+            <div className='second_step-button'>
+              <Button label='Anterior' onClick={previousButton} />
+              <Button label='Siguiente' onClick={nextButton} />
+            </div>
           </div>
         )
       }

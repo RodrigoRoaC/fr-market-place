@@ -20,19 +20,21 @@ const FourthStep = ({
         currentStep === 3
         && 
         (
-          <div>
-            { !form.hasMedicalRecord && <h2>Nuestros ejecutivos se comunicarán con Uds. en breve momentos</h2> }
-            { (form.hasMedicalRecord && form.atentionType === 2) && <h2>Nuestros ejecutivos se comunicarán con Uds. en breve momentos</h2> }
+          <div className="fourth_step">
+            { !form.hasMedicalRecord && <h2 className="fourth_step-label">Nuestros ejecutivos se comunicarán con Uds. en breve momentos</h2> }
+            { (form.hasMedicalRecord && form.atentionType === 2) && <h2 className="fourth_step-label">Nuestros ejecutivos se comunicarán con Uds. en breve momentos</h2> }
             { 
               (form.hasMedicalRecord && form.atentionType === 1) 
               && 
               (
                 <>
-                  <h2>Su tratamiento son por estos diagnósticos y su fecha será para el xx/xx/xxxx</h2>
+                  <h2 className="fourth_step-label">Su tratamiento son por estos diagnósticos y su fecha será para el xx/xx/xxxx</h2>
                 </>
               ) 
             }
-            <Button label='Finalizar' onClick={closeButton} />
+            <div className="fourth_step-button">
+              <Button label='Finalizar' onClick={closeButton} />
+            </div>
           </div>
         )
       }

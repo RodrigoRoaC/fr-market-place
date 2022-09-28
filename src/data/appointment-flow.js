@@ -2,7 +2,7 @@ export const steps = {
   items: [
     {
       key: 0,
-      label: 'Indentificate'
+      label: 'Identificate'
     },
     {
       key: 1,
